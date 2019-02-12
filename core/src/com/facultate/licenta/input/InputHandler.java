@@ -34,6 +34,27 @@ public class InputHandler {
             {
                 playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(200 * deltaTime));
             }
+
+            if(playScreen.getController().isLeftPressed())
+            {
+                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX()+(-200 * deltaTime), playScreen.getPlayer().getY());
+                playScreen.getGameCamera().position.x -= deltaTime*600;
+            }
+            if(playScreen.getController().isRightPressed())
+            {
+                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX()+(200 * deltaTime), playScreen.getPlayer().getY());
+                playScreen.getGameCamera().position.x += deltaTime *600;
+            }
+            if(playScreen.getController().isDownPressed())
+            {
+                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(-200 * deltaTime));
+                playScreen.getGameCamera().position.y -= deltaTime*600;
+            }
+            if(playScreen.getController().isUpPressed())
+            {
+                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(200 * deltaTime));
+                playScreen.getGameCamera().position.y += deltaTime*600;
+            }
         }
     }
 }

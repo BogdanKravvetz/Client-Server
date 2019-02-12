@@ -39,7 +39,8 @@ public class Hud implements Disposable {
         table.add(timeLabel).expandX().padTop(10);
         table.row();
         table.add(inGameTimerLabel).expandX();
-
+        timeLabel.setFontScale(3);
+        inGameTimerLabel.setFontScale(3);
         stage.addActor(table);
     }
     public void update(float dt)
@@ -50,7 +51,7 @@ public class Hud implements Disposable {
     @Override
     public void dispose()
     {
-
+        stage.dispose();
     }
 
 }
