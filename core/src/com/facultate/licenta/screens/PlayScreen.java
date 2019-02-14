@@ -58,6 +58,8 @@ public class PlayScreen implements Screen {
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
+
+
     //tot ce este in word este afectat de physics.
     private World world;
     //randeaza cutii verzi pentru collider-e TODO de ster mai tarziu
@@ -82,6 +84,9 @@ public class PlayScreen implements Screen {
     public Controller getController() {
         return controller;
     }
+    public World getWorld() {
+        return world;
+    }
 
     public OrthographicCamera getGameCamera() {
         return gameCamera;
@@ -91,6 +96,7 @@ public class PlayScreen implements Screen {
     }
     public PlayScreen(Game game) {
         this.myGame = game;
+        world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
         playerSprite = new Texture("Character.png");
         allPlayers = new HashMap<String, Player>();
         connectionHandler = new ConnectionHandler();
@@ -100,16 +106,16 @@ public class PlayScreen implements Screen {
         socketEvents.configSocketEvents();
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
-        gamePort = new FitViewport(myGame.WIDTH,myGame.HEIGHT,gameCamera);
+        gamePort = new FitViewport(myGame.WIDTH / Game.PPM,myGame.HEIGHT/ Game.PPM,gameCamera);
         hud = new Hud(game.batch,this);
         controller = new Controller();
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
+        renderer = new OrthogonalTiledMapRenderer(map,1/Game.PPM);
         //centreaza camera in mijocul lumii? in loc de 0 0
         gameCamera.position.set(gamePort.getWorldWidth()/2,gamePort.getWorldHeight()/2,0);
         //creaza lumea, Vector 0 0 inseamna nu e exista gravitatie.
-        world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
+
         debugRenderer = new Box2DDebugRenderer();
         //inainte de a crea in Body trebuie mai intai specificat ceea ce contine
         BodyDef bodyDef = new BodyDef();
@@ -125,11 +131,11 @@ public class PlayScreen implements Screen {
             Rectangle rect = ((RectangleMapObject) object) .getRectangle();
 
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX()+rect.getWidth()/2, rect.getY()+rect.getHeight()/2);
+            bodyDef.position.set((rect.getX()+rect.getWidth()/2)/ Game.PPM, (rect.getY()+rect.getHeight()/2) / Game.PPM);
             //adauga Body-ul in lumea Box2d
             body = world.createBody(bodyDef);
             //defineste forma poligonului
-            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+            shape.setAsBox((rect.getWidth()/2)/ Game.PPM,(rect.getHeight()/2)/ Game.PPM);
             fixtureDef.shape = shape;
             //adauga fixture in body
             body.createFixture(fixtureDef);
@@ -142,6 +148,12 @@ public class PlayScreen implements Screen {
     public void update( float delta)
     {
         inputHandler.movementInput(Gdx.graphics.getDeltaTime());
+        world.step(1/60f,6,2);
+        if(player!=null)
+        {
+            gameCamera.position.x = player.playerBody.getPosition().x;
+            gameCamera.position.y = player.playerBody.getPosition().y;
+        }
         gameCamera.update();
         renderer.setView(gameCamera);
     }
@@ -149,7 +161,7 @@ public class PlayScreen implements Screen {
     @Override
     public void render(float delta) {
         update(delta);
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.render();
         updateServer.updatePosition(Gdx.graphics.getDeltaTime());
@@ -170,6 +182,7 @@ public class PlayScreen implements Screen {
             entry.getValue().draw(myGame.batch);
         }
         myGame.batch.end();
+
     }
 
     @Override

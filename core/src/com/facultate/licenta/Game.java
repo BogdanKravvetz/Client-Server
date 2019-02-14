@@ -6,6 +6,8 @@ import com.facultate.licenta.screens.PlayScreen;
 public class Game extends com.badlogic.gdx.Game {
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;
+	//pixeli/metru, scalarea pentru Box2d
+	public static final float PPM = 100;
 	public static SpriteBatch batch;
 
 	@Override
