@@ -19,22 +19,23 @@ public class InputHandler {
     {
         if (playScreen.getPlayer()!=null)
         {
-//            if(Gdx.input.isKeyPressed(Input.Keys.A) && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -2)
+//            if(Gdx.input.isKeyPressed(Input.Keys.A) && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
 //            {
-//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(-0.1f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
+//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(-0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
 //            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.D))
+//            if(Gdx.input.isKeyPressed(Input.Keys.D) && playScreen.getPlayer().playerBody.getLinearVelocity().x<=3)
 //            {
-//                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX()+(200 * deltaTime), playScreen.getPlayer().getY());
+//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
 //            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.S))
+//            if(Gdx.input.isKeyPressed(Input.Keys.S) && playScreen.getPlayer().playerBody.getLinearVelocity().y >= -3)
 //            {
-//                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(-200 * deltaTime));
+//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,-0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
 //            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.W))
+//            if(Gdx.input.isKeyPressed(Input.Keys.W) && playScreen.getPlayer().playerBody.getLinearVelocity().y<=3)
 //            {
-//                playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(200 * deltaTime));
+//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
 //            }
+
 
             if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
             {

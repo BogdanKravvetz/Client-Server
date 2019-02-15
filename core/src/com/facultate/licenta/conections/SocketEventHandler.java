@@ -31,7 +31,7 @@ public class SocketEventHandler {
             public void call(Object... args)
             {
                 Gdx.app.log("socketIO","Connected");
-                playScreen.setPlayer(new Player(playScreen.getPlayerSprite(),playScreen.getWorld()));
+                playScreen.setPlayer(new Player(playScreen.getWorld(),playScreen));
             }
             //face rost de id-ul socket-ului (clientului) curent
         }).on("socketId", new Emitter.Listener() {
@@ -57,7 +57,7 @@ public class SocketEventHandler {
                 try {
                     String playerId = data.getString("id"); //ia proprietatea id al obiectului json
                     Gdx.app.log("socketIO","New Player Connected: "+ playerId);
-                    playScreen.getAllPlayers().put(playerId,new Player(playScreen.getPlayerSprite(),playScreen.getWorld()));
+                    playScreen.getAllPlayers().put(playerId,new Player(playScreen.getWorld(),playScreen));
                 }
                 catch (JSONException e)
                 {
@@ -71,7 +71,7 @@ public class SocketEventHandler {
                 try {
                     for (int i=0;i<playersFromServer.length();i++)//itereaza peste lista de jucatori si-i creaza pe ecranele celorlalti jucatori
                     {
-                        Player otherPlayer = new Player(playScreen.getPlayerSprite(),playScreen.getWorld());
+                        Player otherPlayer = new Player(playScreen.getWorld(),playScreen);
                         Vector2 position = new Vector2();
                         position.x = ((Double) playersFromServer.getJSONObject(i).getDouble("x")).floatValue();
                         position.y = ((Double) playersFromServer.getJSONObject(i).getDouble("y")).floatValue();

@@ -4,19 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -28,11 +21,10 @@ import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.tools.WorldCreator;
+
 import java.util.HashMap;
-
-
 public class PlayScreen implements Screen {
-
     private Game myGame;
     private UpdateServer updateServer;
     private SocketEventHandler socketEvents;
@@ -40,7 +32,6 @@ public class PlayScreen implements Screen {
     private float inGameTimer;
     private ConnectionHandler connectionHandler;
     private Player player;
-    private Texture playerSprite;
     private HashMap<String,Player> allPlayers;
     private InputHandler inputHandler;
 
@@ -52,18 +43,17 @@ public class PlayScreen implements Screen {
     //Sagetile pentru mobile.
     private Controller controller;
 
-
     private TmxMapLoader mapLoader;
     //level-ul in sine importat din Tiled
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
-
-
     //tot ce este in word este afectat de physics.
     private World world;
     //randeaza cutii verzi pentru collider-e TODO de ster mai tarziu
     private Box2DDebugRenderer debugRenderer;
+    //Pachet care contine mai multe sprite sheet-uri
+    private TextureAtlas atlas;
 
 
     public float getInGameTimer() {
@@ -78,16 +68,15 @@ public class PlayScreen implements Screen {
     public void setPlayer(Player player) {
         this.player = player;
     }
-    public Texture getPlayerSprite() {
-        return playerSprite;
-    }
     public Controller getController() {
         return controller;
     }
     public World getWorld() {
         return world;
     }
-
+    public TextureAtlas getAtlas() {
+        return atlas;
+    }
     public OrthographicCamera getGameCamera() {
         return gameCamera;
     }
@@ -97,7 +86,6 @@ public class PlayScreen implements Screen {
     public PlayScreen(Game game) {
         this.myGame = game;
         world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
-        playerSprite = new Texture("Character.png");
         allPlayers = new HashMap<String, Player>();
         connectionHandler = new ConnectionHandler();
         connectionHandler.connectSocket();
@@ -117,29 +105,9 @@ public class PlayScreen implements Screen {
         //creaza lumea, Vector 0 0 inseamna nu e exista gravitatie.
 
         debugRenderer = new Box2DDebugRenderer();
-        //inainte de a crea in Body trebuie mai intai specificat ceea ce contine
-        BodyDef bodyDef = new BodyDef();
-        //polygon shape pentru Fixture
-        PolygonShape shape = new PolygonShape();
-        //inainte de a crea fixture trebuie definita mai intai inainte de a fi adaugata in body
-        FixtureDef fixtureDef = new FixtureDef();
-        Body body;
-
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 2 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
-        {
-            //dreptunigiul care definste coliziunea
-            Rectangle rect = ((RectangleMapObject) object) .getRectangle();
-
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((rect.getX()+rect.getWidth()/2)/ Game.PPM, (rect.getY()+rect.getHeight()/2) / Game.PPM);
-            //adauga Body-ul in lumea Box2d
-            body = world.createBody(bodyDef);
-            //defineste forma poligonului
-            shape.setAsBox((rect.getWidth()/2)/ Game.PPM,(rect.getHeight()/2)/ Game.PPM);
-            fixtureDef.shape = shape;
-            //adauga fixture in body
-            body.createFixture(fixtureDef);
-        }
+        //initializeaza atlasul cu datele din pack-ul generat de texture packer.
+        atlas = new TextureAtlas("Alien.pack");
+        new WorldCreator(world,map);
     }
     @Override
     public void show() {
@@ -147,31 +115,34 @@ public class PlayScreen implements Screen {
     }
     public void update( float delta)
     {
-        inputHandler.movementInput(Gdx.graphics.getDeltaTime());
+        inputHandler.movementInput(delta);
+        //update de 60  de ori pe secunda.
         world.step(1/60f,6,2);
         if(player!=null)
         {
             gameCamera.position.x = player.playerBody.getPosition().x;
             gameCamera.position.y = player.playerBody.getPosition().y;
+            player.update(delta);
         }
         gameCamera.update();
+        updateServer.updatePosition(delta);
+        hud.update(delta);
         renderer.setView(gameCamera);
     }
 
     @Override
     public void render(float delta) {
+        //separa logica update de render
         update(delta);
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //randeaza mapa
         renderer.render();
-        updateServer.updatePosition(Gdx.graphics.getDeltaTime());
-        myGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.update(Gdx.graphics.getDeltaTime());
-        hud.stage.draw();
-        controller.draw();
+        //randeaza liniile coliziunilor
         debugRenderer.render(world,gameCamera.combined);
-        myGame.batch.begin();
 
+        myGame.batch.setProjectionMatrix(gameCamera.combined);
+        myGame.batch.begin();
         if(player!=null)
         {
             player.draw(myGame.batch);
@@ -183,6 +154,11 @@ public class PlayScreen implements Screen {
         }
         myGame.batch.end();
 
+        //seteaza batch-ul ca acum sa randeze ceea ce camera de la hud vede.
+        myGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+
+        hud.stage.draw();
+        controller.draw();
     }
 
     @Override
@@ -209,6 +185,11 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-        playerSprite.dispose();
+
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        debugRenderer.dispose();
+        hud.dispose();
     }
 }
