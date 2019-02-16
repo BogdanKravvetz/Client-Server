@@ -39,18 +39,22 @@ public class InputHandler {
 
             if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
             {
+                //playScreen.getPlayer().playerBody.setLinearVelocity(new Vector2(-3f,0f));
                 playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(-0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
             }
             if(playScreen.getController().isRightPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x<=3)
             {
+                //playScreen.getPlayer().playerBody.setLinearVelocity(new Vector2(3f,0f));
                 playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
             }
             if(playScreen.getController().isDownPressed()&& playScreen.getPlayer().playerBody.getLinearVelocity().y >= -3)
             {
+                //playScreen.getPlayer().playerBody.setLinearVelocity(new Vector2(0f,-3f));
                 playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,-0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
             }
             if(playScreen.getController().isUpPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().y<=3)
             {
+                //playScreen.getPlayer().playerBody.setLinearVelocity(new Vector2(0f,3f));
                 playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
                // playScreen.getPlayer().setPosition( playScreen.getPlayer().getX(), playScreen.getPlayer().getY()+(200 * deltaTime));
                // updateCameraPosition();

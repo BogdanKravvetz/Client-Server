@@ -26,6 +26,8 @@ io.on('connection',function(socket)
             //updateaza coordonatele lui pe server.
                 allPlayers[i].x = data.x;
                 allPlayers[i].y = data.y;
+                allPlayers[i].xv = data.xv;
+                allPlayers[i].yv = data.yv;
             }
         }
     });
@@ -43,7 +45,7 @@ io.on('connection',function(socket)
             }
         }
     });
-    allPlayers.push(new player(socket.id,0,0));//cand un jucator se conecteaza adauga-l in lista de jucatori
+    allPlayers.push(new player(socket.id,0,0,0,0));//cand un jucator se conecteaza adauga-l in lista de jucatori
 });
 //in fiecare secunda serverul caculeaza si trimite statusul timer-ului catre clienti.
 setInterval(function()
@@ -52,9 +54,11 @@ setInterval(function()
     io.sockets.emit('sendTimer',{inGameTimer: timer});//SERVERUL trimite catre toti clientii.
 },1000);
 
-function player(id,x,y) //obiectul jucator de pe server.
+function player(id,x,y,xv,yv) //obiectul jucator de pe server.
 {
     this.id = id;
     this.x = x;
     this.y = y;
+    this.xv = xv;
+    this.yv = yv;
 }

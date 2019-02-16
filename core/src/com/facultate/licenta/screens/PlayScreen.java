@@ -86,6 +86,7 @@ public class PlayScreen implements Screen {
     public PlayScreen(Game game) {
         this.myGame = game;
         world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
+        atlas = new TextureAtlas("Alien.pack");
         allPlayers = new HashMap<String, Player>();
         connectionHandler = new ConnectionHandler();
         connectionHandler.connectSocket();
@@ -106,7 +107,7 @@ public class PlayScreen implements Screen {
 
         debugRenderer = new Box2DDebugRenderer();
         //initializeaza atlasul cu datele din pack-ul generat de texture packer.
-        atlas = new TextureAtlas("Alien.pack");
+
         new WorldCreator(world,map);
     }
     @Override
@@ -115,9 +116,9 @@ public class PlayScreen implements Screen {
     }
     public void update( float delta)
     {
-        inputHandler.movementInput(delta);
         //update de 60  de ori pe secunda.
         world.step(1/60f,6,2);
+        inputHandler.movementInput(delta);
         if(player!=null)
         {
             gameCamera.position.x = player.playerBody.getPosition().x;
@@ -150,6 +151,7 @@ public class PlayScreen implements Screen {
         //randeaza toti jucatorii in functie de lista primita de la server.
         for (HashMap.Entry<String,Player> entry : allPlayers.entrySet())
         {
+            entry.getValue().update(delta);
             entry.getValue().draw(myGame.batch);
         }
         myGame.batch.end();

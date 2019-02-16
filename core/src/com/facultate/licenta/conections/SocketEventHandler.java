@@ -75,7 +75,8 @@ public class SocketEventHandler {
                         Vector2 position = new Vector2();
                         position.x = ((Double) playersFromServer.getJSONObject(i).getDouble("x")).floatValue();
                         position.y = ((Double) playersFromServer.getJSONObject(i).getDouble("y")).floatValue();
-                        otherPlayer.setPosition(position.x,position.y);
+                        otherPlayer.playerBody.setTransform(position,0f);
+                        //otherPlayer.setPosition(position.x,position.y);
                         playScreen.getAllPlayers().put(playersFromServer.getJSONObject(i).getString("id"),otherPlayer);//pune jucatorii in hash-map=ul local
                     }
                 }
@@ -93,10 +94,27 @@ public class SocketEventHandler {
                     String playerId = data.getString("id");
                     Double xPosition = data.getDouble("x");
                     Double yPosition = data.getDouble("y");
+                    Double xVelocity = data.getDouble("xv");
+                    Double yVelocity = data.getDouble("yv");
                     if(playScreen.getAllPlayers().get(playerId) !=null)//daca exista jucatorul respectiv in hashmap atunci
                     {
                         //schimba pozitia jucatorlui respectiv pe propriul ecran
-                        playScreen.getAllPlayers().get(playerId).setPosition(xPosition.floatValue(),yPosition.floatValue());
+                        if(xVelocity.floatValue() == 0 && yVelocity.floatValue()== 0)
+                        {
+                            playScreen.getAllPlayers().get(playerId).playerBody.setLinearVelocity(0,0);
+                            playScreen.getAllPlayers().get(playerId).playerBody.setTransform(xPosition.floatValue(),yPosition.floatValue(),0);
+                            Gdx.app.postRunnable(new Runnable() {
+
+                                @Override
+                                public void run () {
+
+                                }
+                            });
+                        }
+                        else
+                        {
+                            playScreen.getAllPlayers().get(playerId).playerBody.setLinearVelocity(xVelocity.floatValue(),yVelocity.floatValue());
+                        }
                     }
                 }
                 catch (JSONException e)

@@ -24,6 +24,7 @@ public class UpdateServer {
     public void updatePosition(float deltaTime)
     {
         timer+= deltaTime;//timer pentru cat timp a trecut de la ultimul update
+        //&& playScreen.getPlayer().hasMoved()
         if(timer>=UPDATE_TIME && playScreen.getPlayer()!= null && playScreen.getPlayer().hasMoved()) //daca a trecut destul timp de  la ultimul update si jucatorul exista si s-a miscat(has moved din player class).
         {
             //UPDATE
@@ -31,8 +32,28 @@ public class UpdateServer {
             //apoi este trimisa catre server prin event-ul "playerMoved"
             JSONObject data = new JSONObject();
             try {
-                data.put("x",playScreen.getPlayer().getX());
-                data.put("y",playScreen.getPlayer().getY());
+                data.put("x",playScreen.getPlayer().playerBody.getPosition().x);
+                data.put("y",playScreen.getPlayer().playerBody.getPosition().y);
+                data.put("xv",playScreen.getPlayer().playerBody.getLinearVelocity().x);
+                data.put("yv",playScreen.getPlayer().playerBody.getLinearVelocity().y);
+                //data.put("x",playScreen.getPlayer().getX());
+                //data.put("y",playScreen.getPlayer().getY());
+                connectionHandler.getSocket().emit("playerMoved", data);//trimite event catre server.
+            }
+            catch (JSONException e) {
+                Gdx.app.log("socketIO", "error sending update data");
+            }
+        }
+        else if(timer>=UPDATE_TIME && playScreen.getPlayer()!= null)
+        {
+            JSONObject data = new JSONObject();
+            try {
+                data.put("x",playScreen.getPlayer().playerBody.getPosition().x);
+                data.put("y",playScreen.getPlayer().playerBody.getPosition().y);
+                data.put("xv",0);
+                data.put("yv",0);
+                //data.put("x",playScreen.getPlayer().getX());
+                //data.put("y",playScreen.getPlayer().getY());
                 connectionHandler.getSocket().emit("playerMoved", data);//trimite event catre server.
             }
             catch (JSONException e) {
