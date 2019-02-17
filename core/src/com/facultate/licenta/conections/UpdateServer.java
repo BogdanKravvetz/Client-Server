@@ -12,7 +12,7 @@ public class UpdateServer {
     private PlayScreen playScreen;
     private ConnectionHandler connectionHandler;
 
-    private final float UPDATE_RATE = 30;
+    private final float UPDATE_RATE = 60;
     private final float UPDATE_TIME = 1/UPDATE_RATE;
     private float timer;
     public UpdateServer (PlayScreen playScreen,ConnectionHandler connectionHandler)

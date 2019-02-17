@@ -21,6 +21,8 @@ import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.objects.Spider;
+import com.facultate.licenta.tools.WorldContactListener;
 import com.facultate.licenta.tools.WorldCreator;
 
 import java.util.HashMap;
@@ -44,6 +46,7 @@ public class PlayScreen implements Screen {
     private Controller controller;
 
     private TmxMapLoader mapLoader;
+
     //level-ul in sine importat din Tiled
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
@@ -54,6 +57,9 @@ public class PlayScreen implements Screen {
     private Box2DDebugRenderer debugRenderer;
     //Pachet care contine mai multe sprite sheet-uri
     private TextureAtlas atlas;
+
+    public boolean test;
+    public Spider spider;
 
 
     public float getInGameTimer() {
@@ -83,6 +89,11 @@ public class PlayScreen implements Screen {
     public HashMap<String, Player> getAllPlayers() {
         return allPlayers;
     }
+
+    public TiledMap getMap() {
+        return map;
+    }
+
     public PlayScreen(Game game) {
         this.myGame = game;
         world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
@@ -108,7 +119,10 @@ public class PlayScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         //initializeaza atlasul cu datele din pack-ul generat de texture packer.
 
-        new WorldCreator(world,map);
+        new WorldCreator(this);
+        test = false;
+        spider = new Spider(this,400/Game.PPM,400/Game.PPM);
+        world.setContactListener(new WorldContactListener());
     }
     @Override
     public void show() {
@@ -125,6 +139,8 @@ public class PlayScreen implements Screen {
             gameCamera.position.y = player.playerBody.getPosition().y;
             player.update(delta);
         }
+        if(spider!=null)
+            spider.update(delta);
         gameCamera.update();
         updateServer.updatePosition(delta);
         hud.update(delta);
@@ -148,6 +164,7 @@ public class PlayScreen implements Screen {
         {
             player.draw(myGame.batch);
         }
+        spider.draw(myGame.batch);
         //randeaza toti jucatorii in functie de lista primita de la server.
         for (HashMap.Entry<String,Player> entry : allPlayers.entrySet())
         {

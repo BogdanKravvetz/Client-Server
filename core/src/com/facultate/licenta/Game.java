@@ -10,6 +10,12 @@ public class Game extends com.badlogic.gdx.Game {
 	public static final float PPM = 100;
 	public static SpriteBatch batch;
 
+	public static final short DEFAULT_BIT = 1;
+	public static final short PLAYER_BIT = 2;
+	public static final short OBJECT_BIT = 4;
+	public static final short DESTROYED_BIT = 8;//bit pentru ignorarea coliziunii unui obiect distrus? sau filtru(cand nu mai exista inamici pune filtru pe DESTROYED_BIT pentru a avansa la urmatoarea camera.)
+	public static final short ENEMY_BIT = 16;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();

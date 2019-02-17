@@ -27,12 +27,12 @@ public class Player extends Sprite {
     private Vector2 position;
     //sprite = o singura imagine(pozitie) din sprite sheet
     private TextureRegion sprite;
-    public Player(World world , PlayScreen playScreen)
+    public Player(PlayScreen playScreen)
     {
         //obtine regiunea din sprite sheet  asociata cu caracterul.
         super(playScreen.getAtlas().findRegion("sprite"));
+        this.world = playScreen.getWorld();
         position = new Vector2(getX(),getY());
-        this.world = world;
         currentState = State.STANDING;
         previousState = State.STANDING;
         stateTimer = 0;
@@ -40,7 +40,7 @@ public class Player extends Sprite {
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
         for(int j =0 ;j<=3;j++) {
-        for (int i= 1 ; i<6 ;i++)
+        for (int i= 0 ; i<6 ;i++)
         {
 
                 frames.add(new TextureRegion(getTexture(), i * 90, j*160, 90, 150));
@@ -115,8 +115,14 @@ public class Player extends Sprite {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         playerBody = this.world.createBody(bodyDef);
         shape.setAsBox(30/ Game.PPM,70/ Game.PPM);
+        //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
+        fixtureDef.filter.categoryBits = Game.PLAYER_BIT;
+
+        //biti cu care jucatorul poate avea coliziuni
+        //MASCA
+        fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
         fixtureDef.shape = shape;
-        playerBody.createFixture(fixtureDef);
+        playerBody.createFixture(fixtureDef).setUserData("player");
         shape.dispose();
     }
 }
