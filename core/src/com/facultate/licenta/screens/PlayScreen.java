@@ -20,6 +20,7 @@ import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
+import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
 import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.tools.WorldContactListener;
@@ -50,6 +51,7 @@ public class PlayScreen implements Screen {
     //level-ul in sine importat din Tiled
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
+    private WorldCreator worldCreator;
 
     //tot ce este in word este afectat de physics.
     private World world;
@@ -58,8 +60,8 @@ public class PlayScreen implements Screen {
     //Pachet care contine mai multe sprite sheet-uri
     private TextureAtlas atlas;
 
+
     public boolean test;
-    public Spider spider;
 
 
     public float getInGameTimer() {
@@ -119,9 +121,8 @@ public class PlayScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         //initializeaza atlasul cu datele din pack-ul generat de texture packer.
 
-        new WorldCreator(this);
+        worldCreator = new WorldCreator(this);
         test = false;
-        spider = new Spider(this,400/Game.PPM,400/Game.PPM);
         world.setContactListener(new WorldContactListener());
     }
     @Override
@@ -139,8 +140,10 @@ public class PlayScreen implements Screen {
             gameCamera.position.y = player.playerBody.getPosition().y;
             player.update(delta);
         }
-        if(spider!=null)
-            spider.update(delta);
+        for (Enemy enemy : worldCreator.getSpiders())
+        {
+            enemy.update(delta);
+        }
         gameCamera.update();
         updateServer.updatePosition(delta);
         hud.update(delta);
@@ -164,7 +167,10 @@ public class PlayScreen implements Screen {
         {
             player.draw(myGame.batch);
         }
-        spider.draw(myGame.batch);
+        for (Enemy enemy : worldCreator.getSpiders())
+        {
+            enemy.draw(myGame.batch);
+        }
         //randeaza toti jucatorii in functie de lista primita de la server.
         for (HashMap.Entry<String,Player> entry : allPlayers.entrySet())
         {

@@ -10,11 +10,18 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.Gate;
+import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.screens.PlayScreen;
 
 public class WorldCreator {
+    public Array<Spider> getSpiders() {
+        return spiders;
+    }
+
+    private Array<Spider> spiders;
 
     public  WorldCreator(PlayScreen playScreen)
     {
@@ -47,11 +54,22 @@ public class WorldCreator {
             //adauga fixture in body
             body.createFixture(fixtureDef);
         }
+        //creaza portile
         for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 3 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
         {
             //dreptunigiul care definste coliziunea
             Rectangle rect = ((RectangleMapObject) object) .getRectangle();
             new Gate(playScreen,rect);
+        }
+        //creaza paienjeni
+        spiders = new Array<Spider>();
+        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 4 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
+        {
+            //dreptunigiul care definste coliziunea
+            Rectangle rect = ((RectangleMapObject) object) .getRectangle();
+
+            //rect.getX()/Game.PPM
+            spiders.add(new Spider(playScreen,rect.getX(),rect.getY()));
         }
         shape.dispose();
     }

@@ -1,5 +1,6 @@
 package com.facultate.licenta.objects;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
@@ -23,7 +24,11 @@ public class Gate extends InteractiveTileObject{
     public void onNoEnemies() {
         if (playScreen.test) {
             setCategoryFilter(Game.DESTROYED_BIT);
-            getCell().setTile(null);
+            for (TiledMapTileLayer.Cell cell: getGateCells()) {
+                if(cell!=null)
+                    cell.setTile(null);
+            }
+            //getCell().setTile(null);
         }
     }
 }
