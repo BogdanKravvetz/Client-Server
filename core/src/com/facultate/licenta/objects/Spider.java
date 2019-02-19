@@ -71,14 +71,14 @@ public class Spider extends Enemy {
         enemyBody.createFixture(fixtureDef).setUserData(this);
         shape.dispose();
     }
-    @Override
-    public void draw(Batch batch)
-    {
-        if(!destroyed || stateTime<0.1f)
-        {
-            super.draw(batch);
-        }
-    }
+//    @Override
+//    public void draw(Batch batch)
+//    {
+//        if(!destroyed || stateTime<-1f)
+//        {
+//            super.draw(batch);
+//        }
+//    }
 
     @Override
     public void onHit() {

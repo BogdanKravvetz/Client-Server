@@ -2,7 +2,10 @@ package com.facultate.licenta.conections;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.screens.PlayScreen;
 
 import org.json.JSONArray;
@@ -99,17 +102,10 @@ public class SocketEventHandler {
                     if(playScreen.getAllPlayers().get(playerId) !=null)//daca exista jucatorul respectiv in hashmap atunci
                     {
                         //schimba pozitia jucatorlui respectiv pe propriul ecran
-                        if(xVelocity.floatValue() == 0 && yVelocity.floatValue()== 0)
+                        if(xVelocity.floatValue() == 0 && yVelocity.floatValue()== 0 && (playScreen.getAllPlayers().get(playerId).playerBody.getPosition().x!=xPosition.floatValue() || playScreen.getAllPlayers().get(playerId).playerBody.getPosition().y !=yPosition.floatValue()))
                         {
                             playScreen.getAllPlayers().get(playerId).playerBody.setLinearVelocity(0,0);
                             playScreen.getAllPlayers().get(playerId).playerBody.setTransform(xPosition.floatValue(),yPosition.floatValue(),0);
-                            Gdx.app.postRunnable(new Runnable() {
-
-                                @Override
-                                public void run () {
-
-                                }
-                            });
                         }
                         else
                         {
@@ -137,6 +133,59 @@ public class SocketEventHandler {
                     Gdx.app.log("socketIO", "error updating in game timer from server.");
                 }
             }
+        }).on("getSpiders", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONArray spidersFromServer = (JSONArray) objects[0];//ia lista de jucatori de pe server
+
+                try {
+                    for (int i=0;i<spidersFromServer.length();i++)//itereaza peste lista de jucatori si-i creaza pe ecranele celorlalti jucatori
+                    {
+
+                        Vector2 position = new Vector2();
+                        position.x = ((Double) spidersFromServer.getJSONObject(i).getDouble("x")).floatValue();
+                        position.y = ((Double) spidersFromServer.getJSONObject(i).getDouble("y")).floatValue();
+                        Gdx.app.log("socketIO", "spider x " + position.x + " spider y: " + position.y);
+                        Spider spider = new Spider(playScreen,position.x * Game.PPM,position.y * Game.PPM);
+                        playScreen.getWorldCreator().spawned = spidersFromServer.getJSONObject(i).getBoolean("spawned");
+                        playScreen.getWorldCreator().getSpiders().add(spider);
+                        Gdx.app.log("socketIO", "Got Spider" + i);
+
+                    }
+                    if(!playScreen.getWorldCreator().spawned)
+                    {
+                        playScreen.getWorldCreator().spawn(playScreen);
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("socketIO", "Error getting players from server");
+                }
+            }
+        }).on("spiders", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONArray data = new JSONArray();
+                try {
+                    for (int i=0;i<data.length();i++)
+                    {
+                        JSONObject spider = (JSONObject) data.get(i);
+                        Double xPosition = spider.getDouble("x");
+                        Double yPosition = spider.getDouble("y");
+                        Double xVelocity = spider.getDouble("xv");
+                        Double yVelocity = spider.getDouble("yv");
+                        if(playScreen.getWorldCreator().getSpiders().get(i)!=null)
+                        {
+                            playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(xVelocity.floatValue(),yVelocity.floatValue());
+                        }
+                    }
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("socketIO", "Errorgetting Player id");
+                }
+            }
         });
         connectionHandler.getSocket().on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
@@ -158,4 +207,31 @@ public class SocketEventHandler {
                 }
             }
         });
-    }}
+    }
+    public void getSpiders()
+    {
+        connectionHandler.getSocket().on("getSpiders", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONArray spidersFromServer = (JSONArray) objects[0];//ia lista de jucatori de pe server
+
+                try {
+                    for (int i=0;i<spidersFromServer.length();i++)//itereaza peste lista de jucatori si-i creaza pe ecranele celorlalti jucatori
+                    {
+
+                        Vector2 position = new Vector2();
+                        position.x = ((Double) spidersFromServer.getJSONObject(i).getDouble("x")).floatValue();
+                        position.y = ((Double) spidersFromServer.getJSONObject(i).getDouble("y")).floatValue();
+                        Spider spider = new Spider(playScreen,position.x,position.y);
+                        playScreen.getWorldCreator().getSpiders().add(spider);
+                    }
+
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("socketIO", "Error getting players from server");
+                }
+            }
+        });
+    }
+}

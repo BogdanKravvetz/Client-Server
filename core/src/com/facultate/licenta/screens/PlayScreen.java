@@ -22,7 +22,6 @@ import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
-import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.tools.WorldContactListener;
 import com.facultate.licenta.tools.WorldCreator;
 
@@ -33,6 +32,8 @@ public class PlayScreen implements Screen {
     private SocketEventHandler socketEvents;
 
     private float inGameTimer;
+
+
     private ConnectionHandler connectionHandler;
     private Player player;
     private HashMap<String,Player> allPlayers;
@@ -51,6 +52,9 @@ public class PlayScreen implements Screen {
     //level-ul in sine importat din Tiled
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
+
+
+
     private WorldCreator worldCreator;
 
     //tot ce este in word este afectat de physics.
@@ -59,7 +63,6 @@ public class PlayScreen implements Screen {
     private Box2DDebugRenderer debugRenderer;
     //Pachet care contine mai multe sprite sheet-uri
     private TextureAtlas atlas;
-
 
     public boolean test;
 
@@ -91,6 +94,13 @@ public class PlayScreen implements Screen {
     public HashMap<String, Player> getAllPlayers() {
         return allPlayers;
     }
+    public ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
+    }
+    public WorldCreator getWorldCreator() {
+        return worldCreator;
+    }
+
 
     public TiledMap getMap() {
         return map;
@@ -121,9 +131,10 @@ public class PlayScreen implements Screen {
         debugRenderer = new Box2DDebugRenderer();
         //initializeaza atlasul cu datele din pack-ul generat de texture packer.
 
-        worldCreator = new WorldCreator(this);
+
         test = false;
         world.setContactListener(new WorldContactListener());
+        worldCreator = new WorldCreator(this);
     }
     @Override
     public void show() {
@@ -131,6 +142,9 @@ public class PlayScreen implements Screen {
     }
     public void update( float delta)
     {
+
+        updateServer.updatePlayerPosition(delta);
+        updateServer.updateSpiders(delta);
         //update de 60  de ori pe secunda.
         world.step(1/60f,6,2);
         inputHandler.movementInput(delta);
@@ -145,7 +159,7 @@ public class PlayScreen implements Screen {
             enemy.update(delta);
         }
         gameCamera.update();
-        updateServer.updatePosition(delta);
+
         hud.update(delta);
         renderer.setView(gameCamera);
     }
@@ -169,7 +183,8 @@ public class PlayScreen implements Screen {
         }
         for (Enemy enemy : worldCreator.getSpiders())
         {
-            enemy.draw(myGame.batch);
+            if(enemy!=null)
+                enemy.draw(myGame.batch);
         }
         //randeaza toti jucatorii in functie de lista primita de la server.
         for (HashMap.Entry<String,Player> entry : allPlayers.entrySet())

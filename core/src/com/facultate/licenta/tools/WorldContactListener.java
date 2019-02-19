@@ -33,7 +33,7 @@ public class WorldContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        Gdx.app.log("Colider:" , "No More Contact");
+        //Gdx.app.log("Colider:" , "No More Contact");
     }
     //cand ceva a intrat in coloziune se pot schimba caracteristicile acelui colider.
     @Override

@@ -1,5 +1,6 @@
 package com.facultate.licenta.tools;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -12,9 +13,13 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
+import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.objects.Gate;
 import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.screens.PlayScreen;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class WorldCreator {
     public Array<Spider> getSpiders() {
@@ -22,9 +27,13 @@ public class WorldCreator {
     }
 
     private Array<Spider> spiders;
+    private ConnectionHandler connectionHandler;
+    public boolean spawned ;
 
     public  WorldCreator(PlayScreen playScreen)
     {
+        spiders = new Array<Spider>();
+        connectionHandler = playScreen.getConnectionHandler();
         World world = playScreen.getWorld();
         TiledMap map = playScreen.getMap();
         //inainte de a crea in Body trebuie mai intai specificat ceea ce contine
@@ -34,6 +43,7 @@ public class WorldCreator {
         //inainte de a crea fixture trebuie definita mai intai inainte de a fi adaugata in body
         FixtureDef fixtureDef = new FixtureDef();
         Body body;
+        spawned = false;
 
         for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 2 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
         {
@@ -62,16 +72,32 @@ public class WorldCreator {
             new Gate(playScreen,rect);
         }
         //creaza paienjeni
-        spiders = new Array<Spider>();
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 4 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
-        {
-            //dreptunigiul care definste coliziunea
-            Rectangle rect = ((RectangleMapObject) object) .getRectangle();
 
-            //rect.getX()/Game.PPM
-            spiders.add(new Spider(playScreen,rect.getX(),rect.getY()));
-        }
+
         shape.dispose();
+    }
+
+    public void spawn(PlayScreen playScreen)
+    {
+
+        if(spiders.isEmpty() && !spawned) {
+            Gdx.app.log("Spider", "empty");
+            for (MapObject object : playScreen.getMap().getLayers().get(4).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 4 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
+            {
+                //dreptunigiul care definste coliziunea
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
+                spiders.add(new Spider(playScreen, rect.getX(), rect.getY()));
+            }
+            spawned = true;
+
+        }
+        else
+        {
+            Gdx.app.log("Spider", "From List");
+            for (Spider spider: spiders) {
+                new Spider(playScreen,spider.getX(),spider.getY());
+            }
+        }
     }
 
 }
