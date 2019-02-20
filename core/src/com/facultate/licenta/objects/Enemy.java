@@ -1,5 +1,6 @@
 package com.facultate.licenta.objects;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -18,6 +19,7 @@ public abstract class Enemy extends Sprite {
 
     public Enemy(PlayScreen playScreen,float x, float y)
     {
+        super(playScreen.getAtlas().findRegion("sprite"));
         this.playScreen = playScreen;
         this.world = playScreen.getWorld();
         setPosition(x,y);
@@ -40,5 +42,10 @@ public abstract class Enemy extends Sprite {
         Random rdm = new Random();
         velocity.x = rdm.nextFloat();
         velocity.y = rdm.nextFloat();
+    }
+
+    @Override
+    public void draw(Batch batch) {
+        super.draw(batch);
     }
 }

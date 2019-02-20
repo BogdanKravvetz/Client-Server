@@ -27,10 +27,12 @@ public class Player extends Sprite {
     private Vector2 position;
     //sprite = o singura imagine(pozitie) din sprite sheet
     private TextureRegion sprite;
+    private PlayScreen playScreen;
     public Player(PlayScreen playScreen)
     {
         //obtine regiunea din sprite sheet  asociata cu caracterul.
         super(playScreen.getAtlas().findRegion("sprite"));
+        this.playScreen = playScreen;
         this.world = playScreen.getWorld();
         position = new Vector2(getX(),getY());
         currentState = State.STANDING;

@@ -79,7 +79,7 @@ public class UpdateServer {
                     data.put(jspider);
                 }
 
-                connectionHandler.getSocket().emit("spiders", data);//trimite event catre server.
+                connectionHandler.getSocket().emit("spidersMove", data);//trimite event catre server.
                 timer = 0;
             } catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data for spiders");

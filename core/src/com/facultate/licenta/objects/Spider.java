@@ -10,13 +10,15 @@ import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
 
+import io.socket.emitter.Emitter;
+
 public class Spider extends Enemy {
 
 
     private float stateTime;
     private Animation walk;
     private Array<TextureRegion> frames;
-    private boolean setToDestroy;
+    public boolean setToDestroy;
     private boolean destroyed;
     private int changeDirectionTimer;
     private float timer;
@@ -42,12 +44,12 @@ public class Spider extends Enemy {
             destroy();
         }
         if(!destroyed) {
-            if ((int)timer >= changeDirectionTimer) {
-                pickVelocity();
-                reverseVelocity(Math.random() < 0.5 ? true : false,Math.random() < 0.5 ? true : false );
-                timer=0;
-            }
-            enemyBody.setLinearVelocity(velocity);
+//            if ((int)timer >= changeDirectionTimer) {
+//                pickVelocity();
+//                reverseVelocity(Math.random() < 0.5 ? true : false,Math.random() < 0.5 ? true : false );
+//                timer=0;
+//            }
+//            enemyBody.setLinearVelocity(velocity);
             setPosition(enemyBody.getPosition().x - getWidth() / 2, enemyBody.getPosition().y - getHeight() / 2);
             setRegion((TextureRegion) walk.getKeyFrame(stateTime, true));
         }
@@ -71,14 +73,14 @@ public class Spider extends Enemy {
         enemyBody.createFixture(fixtureDef).setUserData(this);
         shape.dispose();
     }
-//    @Override
-//    public void draw(Batch batch)
-//    {
-//        if(!destroyed || stateTime<-1f)
-//        {
-//            super.draw(batch);
-//        }
-//    }
+    @Override
+    public void draw(Batch batch)
+    {
+        if(!destroyed || stateTime<0.01f)
+        {
+            super.draw(batch);
+        }
+    }
 
     @Override
     public void onHit() {

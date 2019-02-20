@@ -16,6 +16,7 @@ io.on('connection',function(socket)
     socket.emit('socketId', {id: socket.id}); //serverul trimite catre socket-ul curent id0ul propriu
     socket.emit('getPlayers', allPlayers); //cand jucatorul se conecteaza primeste lista cu toti jucatorii deja conectati
     socket.emit('getSpiders', allSpiders);//cand jucatorul se conecteaza primeste lista cu toti paienjenii deja existenti.
+    socket.emit('spiders', allSpiders);
     socket.broadcast.emit('newPlayerConnected',{id: socket.id});  //trimite catre toate celelalte socket-uri conectate de nu  si celui curent.
     socket.on('playerMoved', function(data) //event primit de la socket
     {
@@ -33,18 +34,18 @@ io.on('connection',function(socket)
             }
         }
     });
-    socket.on('spiders', function(data) //event primit de la socket
+    socket.on('spidersMove', function(data) //event primit de la socket
         {
             for(var i = 0;i<data.length;i++)
             {
                 allSpiders[i] = data[i];
                 allSpiders[i].x = data[i].x;
                 allSpiders[i].y = data[i].y;
-                allSpiders[i].xv = data[i].xv;
-                allSpiders[i].yv = data[i].yv;
+
+                allSpiders[i].xv = Math.random() * 2 - 1;
+                allSpiders[i].yv = Math.random() * 2 - 1;
                 allSpiders[i].spawned = data[i].spawned;
             }
-            socket.broadcast.emit('spiders',data);
         });
     socket.on('disconnect',function()
     {
@@ -68,6 +69,15 @@ setInterval(function()
     timer++;
     io.sockets.emit('sendTimer',{inGameTimer: timer});//SERVERUL trimite catre toti clientii.
 },1000);
+setInterval(function()
+{
+    io.sockets.emit('spidersMove',allSpiders);//SERVERUL trimite catre toti clientii.
+},4000);
+
+setInterval(function()
+{
+    io.sockets.emit('spidersStop',allSpiders);//SERVERUL trimite catre toti clientii.
+},7777);
 
 function player(id,x,y,xv,yv) //obiectul jucator de pe server.
 {

@@ -170,20 +170,21 @@ public class PlayScreen implements Screen {
         update(delta);
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         //randeaza mapa
         renderer.render();
         //randeaza liniile coliziunilor
         debugRenderer.render(world,gameCamera.combined);
-
         myGame.batch.setProjectionMatrix(gameCamera.combined);
         myGame.batch.begin();
+
         if(player!=null)
         {
             player.draw(myGame.batch);
         }
         for (Enemy enemy : worldCreator.getSpiders())
         {
-            if(enemy!=null)
+            if(enemy!=null && myGame.batch!=null && !worldCreator.getSpiders().isEmpty() && worldCreator.getSpiders()!=null)
                 enemy.draw(myGame.batch);
         }
         //randeaza toti jucatorii in functie de lista primita de la server.
@@ -192,13 +193,14 @@ public class PlayScreen implements Screen {
             entry.getValue().update(delta);
             entry.getValue().draw(myGame.batch);
         }
-        myGame.batch.end();
 
+        myGame.batch.end();
         //seteaza batch-ul ca acum sa randeze ceea ce camera de la hud vede.
         myGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
         hud.stage.draw();
         controller.draw();
+
     }
 
     @Override
