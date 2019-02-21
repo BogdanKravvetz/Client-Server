@@ -22,6 +22,7 @@ import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.tools.UpdateObjects;
 import com.facultate.licenta.tools.WorldContactListener;
 import com.facultate.licenta.tools.WorldCreator;
 
@@ -29,6 +30,9 @@ import java.util.HashMap;
 public class PlayScreen implements Screen {
     private Game myGame;
     private UpdateServer updateServer;
+
+
+
     private SocketEventHandler socketEvents;
 
     private float inGameTimer;
@@ -38,6 +42,7 @@ public class PlayScreen implements Screen {
     private Player player;
     private HashMap<String,Player> allPlayers;
     private InputHandler inputHandler;
+    private UpdateObjects updateObjects;
 
     //camera jocului
     private OrthographicCamera gameCamera;
@@ -65,6 +70,7 @@ public class PlayScreen implements Screen {
     private TextureAtlas atlas;
 
     public boolean test;
+    private float timer;
 
 
     public float getInGameTimer() {
@@ -100,6 +106,9 @@ public class PlayScreen implements Screen {
     public WorldCreator getWorldCreator() {
         return worldCreator;
     }
+    public SocketEventHandler getSocketEvents() {
+        return socketEvents;
+    }
 
 
     public TiledMap getMap() {
@@ -133,8 +142,11 @@ public class PlayScreen implements Screen {
 
 
         test = false;
+        timer= 0;
         world.setContactListener(new WorldContactListener());
         worldCreator = new WorldCreator(this);
+        updateObjects = new UpdateObjects(this);
+
     }
     @Override
     public void show() {
@@ -142,11 +154,28 @@ public class PlayScreen implements Screen {
     }
     public void update( float delta)
     {
-
-        updateServer.updatePlayerPosition(delta);
-        updateServer.updateSpiders(delta);
         //update de 60  de ori pe secunda.
         world.step(1/60f,6,2);
+        timer+=delta;
+        updateServer.updatePlayerPosition(delta);
+        updateServer.updateSpiders(delta);
+        updateObjects.moveOtherPlayers();
+        updateObjects.moveSpiders();
+        if(getWorldCreator().getSpiders().isEmpty() || getWorldCreator().getSpiders() ==null)
+        {
+            updateObjects.getSpiders();
+        }
+        if(allPlayers.isEmpty() || allPlayers ==null)
+        {
+            Gdx.app.log("yo", "NOT COOL");
+            updateObjects.getOtherPlayers();
+        }
+        if((int)timer == 5) {
+            updateObjects.stopSpiders();//nu se vor opri pentru ca move e apelat fiecare frame. dar tot se executa asta.
+            timer=0;
+        }
+
+
         inputHandler.movementInput(delta);
         if(player!=null)
         {

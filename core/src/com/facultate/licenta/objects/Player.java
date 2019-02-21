@@ -60,13 +60,13 @@ public class Player extends Sprite {
     {
         if(position.x != playerBody.getPosition().x || position.y != playerBody.getPosition().y)
         {
-            position.x=playerBody.getPosition().x;
-            position.y=playerBody.getPosition().y;
-            return true;
-        }else
-        {
-            return false;
+            if(playScreen.getWorld().isLocked() == false) {
+                position.x = playerBody.getPosition().x;
+                position.y = playerBody.getPosition().y;
+                return true;
+            }
         }
+        return false;
     }
     public void update(float deltaTime) {
         //updateaza pozitia sprite=ului in functie de pozisia corpului fizic
@@ -110,21 +110,27 @@ public class Player extends Sprite {
 
     public void definePlayer()
     {
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        bodyDef.position.set(300/ Game.PPM,300/ Game.PPM);
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        playerBody = this.world.createBody(bodyDef);
-        shape.setAsBox(30/ Game.PPM,70/ Game.PPM);
-        //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-        fixtureDef.filter.categoryBits = Game.PLAYER_BIT;
+        if(playScreen.getWorld().isLocked()==false) {
+            BodyDef bodyDef = new BodyDef();
+            PolygonShape shape = new PolygonShape();
+            FixtureDef fixtureDef = new FixtureDef();
+            bodyDef.position.set(300 / Game.PPM, 300 / Game.PPM);
+            bodyDef.type = BodyDef.BodyType.DynamicBody;
+            playerBody = this.world.createBody(bodyDef);
+            shape.setAsBox(30 / Game.PPM, 70 / Game.PPM);
+            //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
+            fixtureDef.filter.categoryBits = Game.PLAYER_BIT;
 
-        //biti cu care jucatorul poate avea coliziuni
-        //MASCA
-        fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
-        fixtureDef.shape = shape;
-        playerBody.createFixture(fixtureDef).setUserData("player");
-        shape.dispose();
+            //biti cu care jucatorul poate avea coliziuni
+            //MASCA
+            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
+            fixtureDef.shape = shape;
+            playerBody.createFixture(fixtureDef).setUserData("player");
+            shape.dispose();
+        }
+        else
+        {
+            definePlayer();
+        }
     }
 }

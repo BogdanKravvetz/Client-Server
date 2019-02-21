@@ -31,25 +31,27 @@ public abstract class InteractiveTileObject {
         this.map = playScreen.getMap();
         this.bounds = bounds;
 
-        BodyDef bodyDef = new BodyDef();
-        //polygon shape pentru Fixture
-        PolygonShape shape = new PolygonShape();
-        //inainte de a crea fixture trebuie definita mai intai inainte de a fi adaugata in body
-        FixtureDef fixtureDef = new FixtureDef();
+        if(playScreen.getWorld().isLocked()==false) {
+            BodyDef bodyDef = new BodyDef();
+            //polygon shape pentru Fixture
+            PolygonShape shape = new PolygonShape();
+            //inainte de a crea fixture trebuie definita mai intai inainte de a fi adaugata in body
+            FixtureDef fixtureDef = new FixtureDef();
 
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set((bounds.getX()+bounds.getWidth()/2)/ Game.PPM, (bounds.getY()+bounds.getHeight()/2) / Game.PPM);
-        //adauga Body-ul in lumea Box2d
-        body = world.createBody(bodyDef);
-        //defineste forma poligonului
-        shape.setAsBox((bounds.getWidth()/2)/ Game.PPM,(bounds.getHeight()/2)/ Game.PPM);
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set((bounds.getX() + bounds.getWidth() / 2) / Game.PPM, (bounds.getY() + bounds.getHeight() / 2) / Game.PPM);
+            //adauga Body-ul in lumea Box2d
+            body = world.createBody(bodyDef);
+            //defineste forma poligonului
+            shape.setAsBox((bounds.getWidth() / 2) / Game.PPM, (bounds.getHeight() / 2) / Game.PPM);
 
-        //seteaza categoria de coliziune.
-        //fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
+            //seteaza categoria de coliziune.
+            //fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
 
-        fixtureDef.shape = shape;
-        //adauga fixture in body
-        fixture = body.createFixture(fixtureDef);
+            fixtureDef.shape = shape;
+            //adauga fixture in body
+            fixture = body.createFixture(fixtureDef);
+        }
     }
     public abstract void onNoEnemies();
 

@@ -1,5 +1,6 @@
 package com.facultate.licenta.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,6 +11,9 @@ import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import io.socket.emitter.Emitter;
 
 public class Spider extends Enemy {
@@ -19,7 +23,7 @@ public class Spider extends Enemy {
     private Animation walk;
     private Array<TextureRegion> frames;
     public boolean setToDestroy;
-    private boolean destroyed;
+    public boolean destroyed;
     private int changeDirectionTimer;
     private float timer;
     public Spider(PlayScreen playScreen, float x, float y) {
@@ -57,21 +61,26 @@ public class Spider extends Enemy {
 
     @Override
     protected void defineEnemy() {
-
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        bodyDef.position.set(getX()/Game.PPM,getY()/ Game.PPM);
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        enemyBody = this.world.createBody(bodyDef);
-        shape.setAsBox(30/ Game.PPM,30/ Game.PPM);
-        //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-        fixtureDef.filter.categoryBits = Game.ENEMY_BIT;
-        //biti cu care jucatorul poate avea coliziuni (MASCA)
-        fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
-        fixtureDef.shape = shape;
-        enemyBody.createFixture(fixtureDef).setUserData(this);
-        shape.dispose();
+        if(playScreen.getWorld().isLocked()==false) {
+            BodyDef bodyDef = new BodyDef();
+            PolygonShape shape = new PolygonShape();
+            FixtureDef fixtureDef = new FixtureDef();
+            bodyDef.position.set(getX() / Game.PPM, getY() / Game.PPM);
+            bodyDef.type = BodyDef.BodyType.DynamicBody;
+            enemyBody = this.world.createBody(bodyDef);
+            shape.setAsBox(30 / Game.PPM, 30 / Game.PPM);
+            //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
+            fixtureDef.filter.categoryBits = Game.ENEMY_BIT;
+            //biti cu care jucatorul poate avea coliziuni (MASCA)
+            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
+            fixtureDef.shape = shape;
+            enemyBody.createFixture(fixtureDef).setUserData(this);
+            shape.dispose();
+        }
+        else
+        {
+            defineEnemy();
+        }
     }
     @Override
     public void draw(Batch batch)
@@ -92,5 +101,6 @@ public class Spider extends Enemy {
         destroyed = true;
         stateTime = 0;
     }
+
 
 }

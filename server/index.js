@@ -77,7 +77,7 @@ setInterval(function()
 setInterval(function()
 {
     io.sockets.emit('spidersStop',allSpiders);//SERVERUL trimite catre toti clientii.
-},7777);
+},111);
 
 function player(id,x,y,xv,yv) //obiectul jucator de pe server.
 {

@@ -47,22 +47,24 @@ public class WorldCreator {
 
         for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 2 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
         {
-            //dreptunigiul care definste coliziunea
-            Rectangle rect = ((RectangleMapObject) object) .getRectangle();
+            if(playScreen.getWorld().isLocked()==false) {
+                //dreptunigiul care definste coliziunea
+                Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((rect.getX()+rect.getWidth()/2)/ Game.PPM, (rect.getY()+rect.getHeight()/2) / Game.PPM);
-            //adauga Body-ul in lumea Box2d
-            body = world.createBody(bodyDef);
-            //defineste forma poligonului
-            shape.setAsBox((rect.getWidth()/2)/ Game.PPM,(rect.getHeight()/2)/ Game.PPM);
+                bodyDef.type = BodyDef.BodyType.StaticBody;
+                bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Game.PPM, (rect.getY() + rect.getHeight() / 2) / Game.PPM);
+                //adauga Body-ul in lumea Box2d
+                body = world.createBody(bodyDef);
+                //defineste forma poligonului
+                shape.setAsBox((rect.getWidth() / 2) / Game.PPM, (rect.getHeight() / 2) / Game.PPM);
 
-            //seteaza categoria de coliziune.
-            fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
+                //seteaza categoria de coliziune.
+                fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
 
-            fixtureDef.shape = shape;
-            //adauga fixture in body
-            body.createFixture(fixtureDef);
+                fixtureDef.shape = shape;
+                //adauga fixture in body
+                body.createFixture(fixtureDef);
+            }
         }
         //creaza portile
         for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 3 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
