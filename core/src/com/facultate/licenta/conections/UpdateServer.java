@@ -70,17 +70,19 @@ public class UpdateServer {
             JSONArray data = new JSONArray();
             try {
                 for (Spider spider: playScreen.getWorldCreator().getSpiders()) {
-                    JSONObject jspider = new JSONObject();
-                    jspider.put("x",spider.enemyBody.getPosition().x);
-                    jspider.put("y",spider.enemyBody.getPosition().y);
-                    jspider.put("xv",spider.enemyBody.getLinearVelocity().x);
-                    jspider.put("yv",spider.enemyBody.getLinearVelocity().y);
-                    jspider.put("spawned",true);
-                    data.put(jspider);
+                    if(spider.enemyBody!=null) {
+                        JSONObject jspider = new JSONObject();
+                        jspider.put("x", spider.enemyBody.getPosition().x);
+                        jspider.put("y", spider.enemyBody.getPosition().y);
+                        jspider.put("xv", spider.enemyBody.getLinearVelocity().x);
+                        jspider.put("yv", spider.enemyBody.getLinearVelocity().y);
+                        jspider.put("spawned", true);
+                        data.put(jspider);
+                    }
                 }
 
                 connectionHandler.getSocket().emit("spidersMove", data);//trimite event catre server.
-                timer = 0;
+                //timer = 0;
             } catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data for spiders");
             }

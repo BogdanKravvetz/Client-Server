@@ -6,6 +6,9 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.facultate.licenta.Game;
+import com.facultate.licenta.objects.Bullet;
+import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.InteractiveTileObject;
 
 public class WorldContactListener implements ContactListener {
@@ -20,6 +23,8 @@ public class WorldContactListener implements ContactListener {
         Fixture fixA = contact.getFixtureA();
         Fixture fixB = contact.getFixtureB();
 
+        int cDef = fixA.getFilterData().categoryBits | fixB.getFilterData().categoryBits;
+
         if(fixA.getUserData() == "player" || fixB.getUserData() == "player")
         {
             Fixture player = fixA.getUserData() == "player" ? fixA : fixB;
@@ -27,6 +32,32 @@ public class WorldContactListener implements ContactListener {
 
             if(obj.getUserData()!=null)
                 ((InteractiveTileObject) obj.getUserData()).onNoEnemies();
+        }
+        switch (cDef){
+            case Game.BULLET_BIT | Game.ENEMY_BIT:
+                if(fixA.getFilterData().categoryBits == Game.BULLET_BIT) {
+                    ((Bullet) fixA.getUserData()).onHit();
+                    Gdx.app.log("Cont", "1");
+                    ((Enemy) fixB.getUserData()).onEnemyHit();
+                }
+                else if(fixB.getFilterData().categoryBits == Game.BULLET_BIT)
+                {
+                    Gdx.app.log("Cont", "2");
+                    ((Bullet)fixB.getUserData()).onHit();
+                    if(((Enemy) fixA.getUserData()).enemyBody !=null)
+                    ((Enemy) fixA.getUserData()).onEnemyHit();
+                }
+                break;
+
+            case Game.BULLET_BIT | Game.OBJECT_BIT:
+                if(fixA.getFilterData().categoryBits == Game.BULLET_BIT) {
+                    ((Bullet) fixA.getUserData()).onHit();
+                }
+                else if(fixB.getFilterData().categoryBits == Game.BULLET_BIT)
+                {
+                    ((Bullet)fixB.getUserData()).onHit();
+                }
+                break;
         }
 
     }

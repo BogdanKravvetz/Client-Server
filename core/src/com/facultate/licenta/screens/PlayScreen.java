@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.facultate.licenta.Game;
@@ -20,6 +21,8 @@ import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
+import com.facultate.licenta.objects.Bullet;
+import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
 import com.facultate.licenta.tools.UpdateObjects;
@@ -43,6 +46,10 @@ public class PlayScreen implements Screen {
     private HashMap<String,Player> allPlayers;
     private InputHandler inputHandler;
     private UpdateObjects updateObjects;
+
+
+
+    private Array<DefaultBullet> bullets;
 
     //camera jocului
     private OrthographicCamera gameCamera;
@@ -109,6 +116,9 @@ public class PlayScreen implements Screen {
     public SocketEventHandler getSocketEvents() {
         return socketEvents;
     }
+    public Array<DefaultBullet> getBullets() {
+        return bullets;
+    }
 
 
     public TiledMap getMap() {
@@ -146,6 +156,7 @@ public class PlayScreen implements Screen {
         world.setContactListener(new WorldContactListener());
         worldCreator = new WorldCreator(this);
         updateObjects = new UpdateObjects(this);
+        bullets = new Array<DefaultBullet>();
 
     }
     @Override
@@ -167,15 +178,12 @@ public class PlayScreen implements Screen {
         }
         if(allPlayers.isEmpty() || allPlayers ==null)
         {
-            Gdx.app.log("yo", "NOT COOL");
             updateObjects.getOtherPlayers();
         }
         if((int)timer == 5) {
             updateObjects.stopSpiders();//nu se vor opri pentru ca move e apelat fiecare frame. dar tot se executa asta.
             timer=0;
         }
-
-
         inputHandler.movementInput(delta);
         if(player!=null)
         {
@@ -183,6 +191,15 @@ public class PlayScreen implements Screen {
             gameCamera.position.y = player.playerBody.getPosition().y;
             player.update(delta);
         }
+
+        //Gdx.app.log("BUL","nr "+bullets.size);
+        //Gdx.app.log("BUL","nr " +worldCreator.getSpiders().size);
+//        if(!bullets.isEmpty() || bullets !=null)
+//        {
+            for (DefaultBullet bullet: bullets) {
+                bullet.update(delta);
+            }
+//        }
         for (Enemy enemy : worldCreator.getSpiders())
         {
             enemy.update(delta);
@@ -222,6 +239,12 @@ public class PlayScreen implements Screen {
             entry.getValue().update(delta);
             entry.getValue().draw(myGame.batch);
         }
+//        if(!bullets.isEmpty() || bullets !=null)
+//        {
+            for (DefaultBullet bullet: bullets) {
+                bullet.draw(myGame.batch);
+            }
+//        }
 
         myGame.batch.end();
         //seteaza batch-ul ca acum sa randeze ceea ce camera de la hud vede.

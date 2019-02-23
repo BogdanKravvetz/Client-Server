@@ -7,42 +7,25 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.facultate.licenta.screens.PlayScreen;
 
-import java.util.Random;
+public abstract class Bullet extends Sprite {
 
-
-//TODO Sintronizarea inamicilor
-public abstract class Enemy extends Sprite {
-    protected World world;
     protected PlayScreen playScreen;
-    public Body enemyBody;
+    protected World world;
+    public Body bulletBody;
     public Vector2 velocity;
 
-    public Enemy(PlayScreen playScreen,float x, float y)
+    public Bullet(PlayScreen playScreen,float x ,float y)
     {
         super(playScreen.getAtlas().findRegion("sprite"));
         this.playScreen = playScreen;
         this.world = playScreen.getWorld();
         setPosition(x,y);
-        defineEnemy();
+        defineBullet();
         velocity = new Vector2(0,0);
     }
-    protected abstract void defineEnemy();
+    protected abstract void defineBullet();
     public abstract void update(float deltaTime);
-    public abstract void onEnemyHit();
-
-    public void reverseVelocity(boolean x,boolean y)
-    {
-        if (x)
-            velocity.x  = -velocity.x;
-        if (y)
-            velocity.y = -velocity.y;
-    }
-    public void pickVelocity()
-    {
-        Random rdm = new Random();
-        velocity.x = rdm.nextFloat();
-        velocity.y = rdm.nextFloat();
-    }
+    public abstract void onHit();
 
     @Override
     public void draw(Batch batch) {

@@ -11,90 +11,93 @@ import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import io.socket.emitter.Emitter;
-
-public class Spider extends Enemy {
-
+public class DefaultBullet extends Bullet {
 
     private float stateTime;
     private Animation walk;
     private Array<TextureRegion> frames;
     public boolean setToDestroy;
     public boolean destroyed;
-    private int changeDirectionTimer;
-    public Spider(PlayScreen playScreen, float x, float y) {
+    private float lifeSpan;
+
+    public DefaultBullet(PlayScreen playScreen,float x,float y)
+    {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
-        for (int i=0;i<4;i++)
-            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 150));
+        for (int i=0;i<1;i++)
+            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 50));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/Game.PPM,150/Game.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,90/ Game.PPM,50/Game.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
-        changeDirectionTimer = 2;
-    }
-
-    public void update(float deltaTime)
-    {
-        stateTime +=deltaTime;
-        if(setToDestroy && !destroyed) {
-            destroy();
-        }
-        if(!destroyed) {
-            setPosition(enemyBody.getPosition().x - getWidth() / 2, enemyBody.getPosition().y - getHeight() / 2);
-            setRegion((TextureRegion) walk.getKeyFrame(stateTime, true));
-        }
+        lifeSpan = 8;
     }
 
     @Override
-    protected void defineEnemy() {
+    protected void defineBullet() {
         if(playScreen.getWorld().isLocked()==false) {
+
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
             bodyDef.position.set(getX() / Game.PPM, getY() / Game.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
-            enemyBody = this.world.createBody(bodyDef);
+            bulletBody = this.world.createBody(bodyDef);
+            Gdx.app.log("Bullet",bulletBody.toString());
             shape.setAsBox(30 / Game.PPM, 30 / Game.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-            fixtureDef.filter.categoryBits = Game.ENEMY_BIT;
+            fixtureDef.filter.categoryBits = Game.BULLET_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
-            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT | Game.BULLET_BIT;
+            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT | Game.ENEMY_BIT;
             fixtureDef.shape = shape;
-            enemyBody.createFixture(fixtureDef).setUserData(this);
-            //Gdx.app.log("in","SPIDER");
+            fixtureDef.isSensor = true;
+            bulletBody.createFixture(fixtureDef).setUserData(this);
+
             //shape.dispose();
         }
         else
         {
-            defineEnemy();
+            defineBullet();
+        }
+    }
+
+    @Override
+    public void update(float deltaTime)
+    {
+        stateTime +=deltaTime;
+        if((int)stateTime == (int)lifeSpan)
+        {
+            setToDestroy = true;
+        }
+        if(setToDestroy && !destroyed) {
+            destroy();
+        }
+        if(!destroyed) {
+            setPosition(bulletBody.getPosition().x - getWidth() / 2, bulletBody.getPosition().y - getHeight() / 2);
+            setRegion((TextureRegion) walk.getKeyFrame(stateTime, true));
         }
     }
     @Override
     public void draw(Batch batch)
     {
-        if(!destroyed || stateTime<0.1f)
+        if(!destroyed || stateTime<=0.0001f)
         {
             super.draw(batch);
         }
     }
 
     @Override
-    public void onEnemyHit() {
+    public void onHit() {
         setToDestroy = true;
     }
     public void destroy()
     {
-        world.destroyBody(enemyBody);
-        enemyBody = null;
+//        Gdx.app.log("in","DISTRUS");
+        world.destroyBody(bulletBody);
+        bulletBody = null;
         destroyed = true;
         stateTime = 0;
-        //playScreen.getWorldCreator().getSpiders().removeValue(this,true);
+        playScreen.getBullets().removeValue(this,true);
     }
-
-
 }

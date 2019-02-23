@@ -99,14 +99,16 @@ public class UpdateObjects {
             //Gdx.app.log("socketIO", data.length() + "");
             if(playScreen.getSocketEvents().spidersFromServer !=null) {
                 for (int i = 0; i < playScreen.getSocketEvents().spidersFromServer.length(); i++) {
-                    JSONObject spider = (JSONObject) playScreen.getSocketEvents().spidersFromServer.get(i);
-                    Double xPosition = spider.getDouble("x") * Game.PPM;
-                    Double yPosition = spider.getDouble("y") * Game.PPM;
-                    Double xVelocity = spider.getDouble("xv");
-                    Double yVelocity = spider.getDouble("yv");
-                    //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);
-                    if (playScreen.getWorldCreator().getSpiders().get(i) != null && playScreen.getWorld().isLocked() == false) {
-                        playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(xVelocity.floatValue(), yVelocity.floatValue());
+                    if(playScreen.getWorldCreator().getSpiders().get(i).enemyBody!=null) {
+                        JSONObject spider = (JSONObject) playScreen.getSocketEvents().spidersFromServer.get(i);
+                        Double xPosition = spider.getDouble("x") * Game.PPM;
+                        Double yPosition = spider.getDouble("y") * Game.PPM;
+                        Double xVelocity = spider.getDouble("xv");
+                        Double yVelocity = spider.getDouble("yv");
+                        //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);
+                        if (playScreen.getWorldCreator().getSpiders().get(i) != null && playScreen.getWorld().isLocked() == false) {
+                            playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(xVelocity.floatValue(), yVelocity.floatValue());
+                        }
                     }
                 }
             }
@@ -122,31 +124,33 @@ public class UpdateObjects {
             if (playScreen.getSocketEvents().spidersFromServerAtStop != null) {
                 //Gdx.app.log("socketIO", playScreen.getSocketEvents().spidersFromServerAtStop.length() + "");
                 for (int i = 0; i < playScreen.getSocketEvents().spidersFromServerAtStop.length(); i++) {
-                    JSONObject spider = (JSONObject) playScreen.getSocketEvents().spidersFromServerAtStop.get(i);
-                    //playScreen.getWorldCreator().getSpiders().add(spider);
-                    Double xPosition = spider.getDouble("x");
-                    Double yPosition = spider.getDouble("y");
-                    Double xVelocity = spider.getDouble("xv");
-                    Double yVelocity = spider.getDouble("yv");
-                    //Gdx.app.log("socketIO", "x" + xPosition + "y " + yPosition);
-                    if (playScreen.getWorldCreator().getSpiders().get(i) != null && playScreen.getWorld().isLocked() == false) {
-                        playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(0,0);
-                        playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setTransform(xPosition.floatValue(),yPosition.floatValue(),0);
-                        //playScreen.getWorldCreator().getSpiders().get(i).setToDestroy = true;
-                        //if(playScreen.getWorldCreator().getSpiders().get(i).destroyed) {
-                        //playScreen.getWorldCreator().getSpiders().removeIndex(i);
+                    if(playScreen.getWorldCreator().getSpiders().get(i).enemyBody!=null) {
+                        JSONObject spider = (JSONObject) playScreen.getSocketEvents().spidersFromServerAtStop.get(i);
+                        //playScreen.getWorldCreator().getSpiders().add(spider);
+                        Double xPosition = spider.getDouble("x");
+                        Double yPosition = spider.getDouble("y");
+                        Double xVelocity = spider.getDouble("xv");
+                        Double yVelocity = spider.getDouble("yv");
+                        //Gdx.app.log("socketIO", "x" + xPosition + "y " + yPosition);
+                        if (playScreen.getWorldCreator().getSpiders().get(i) != null && playScreen.getWorld().isLocked() == false) {
+                            playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(0, 0);
+                            playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setTransform(xPosition.floatValue(), yPosition.floatValue(), 0);
+                            //playScreen.getWorldCreator().getSpiders().get(i).setToDestroy = true;
+                            //if(playScreen.getWorldCreator().getSpiders().get(i).destroyed) {
+                            //playScreen.getWorldCreator().getSpiders().removeIndex(i);
 
-                        //asta e aproape ok DAR
+                            //asta e aproape ok DAR
 //                        Spider spiderNew = new Spider(playScreen, xPosition.floatValue() * Game.PPM, yPosition.floatValue() * Game.PPM);
 //                        spiderNew.enemyBody.setLinearVelocity(0, 0);
 //                        playScreen.getWorldCreator().getSpiders().removeIndex(i);
 //                        playScreen.getWorldCreator().getSpiders().insert(i, spiderNew);
-                        /////////////////
-                        //playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(0, 0);
-                        //playScreen.getWorldCreator().getSpiders().insert(i, spiderNew);
-                        //playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setTransform(xPosition.floatValue(),yPosition.floatValue(),0);
-                        //}
+                            /////////////////
+                            //playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(0, 0);
+                            //playScreen.getWorldCreator().getSpiders().insert(i, spiderNew);
+                            //playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setTransform(xPosition.floatValue(),yPosition.floatValue(),0);
+                            //}
 
+                        }
                     }
                 }
             }
