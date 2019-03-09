@@ -1,6 +1,5 @@
 package com.facultate.licenta.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,8 +15,8 @@ public class DefaultBullet extends Bullet {
     private float stateTime;
     private Animation walk;
     private Array<TextureRegion> frames;
-    public boolean setToDestroy;
-    public boolean destroyed;
+    private boolean setToDestroy;
+    private boolean destroyed;
     private float lifeSpan;
 
     public DefaultBullet(PlayScreen playScreen,float x,float y)
@@ -36,7 +35,7 @@ public class DefaultBullet extends Bullet {
 
     @Override
     protected void defineBullet() {
-        if(playScreen.getWorld().isLocked()==false) {
+        if(!playScreen.getWorld().isLocked()) {
 
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
@@ -44,7 +43,7 @@ public class DefaultBullet extends Bullet {
             bodyDef.position.set(getX() / Game.PPM, getY() / Game.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bulletBody = this.world.createBody(bodyDef);
-            Gdx.app.log("Bullet",bulletBody.toString());
+            //Gdx.app.log("Bullet",bulletBody.toString());
             shape.setAsBox(30 / Game.PPM, 30 / Game.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
             fixtureDef.filter.categoryBits = Game.BULLET_BIT;
@@ -53,7 +52,6 @@ public class DefaultBullet extends Bullet {
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
             bulletBody.createFixture(fixtureDef).setUserData(this);
-
             //shape.dispose();
         }
         else
@@ -61,7 +59,6 @@ public class DefaultBullet extends Bullet {
             defineBullet();
         }
     }
-
     @Override
     public void update(float deltaTime)
     {
@@ -86,14 +83,12 @@ public class DefaultBullet extends Bullet {
             super.draw(batch);
         }
     }
-
     @Override
     public void onHit() {
         setToDestroy = true;
     }
-    public void destroy()
+    protected void destroy()
     {
-//        Gdx.app.log("in","DISTRUS");
         world.destroyBody(bulletBody);
         bulletBody = null;
         destroyed = true;

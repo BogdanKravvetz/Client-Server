@@ -14,13 +14,12 @@ import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
 
 public class Player extends Sprite {
-    public enum State {STANDING,RUNNING};
-    public State currentState;
-    public State previousState;
+    public enum State {STANDING,RUNNING}
+    private State currentState;
+    private State previousState;
     private Animation run;
     private float stateTimer;
     private boolean right;
-
 
     private World world ;
     public Body playerBody;
@@ -39,13 +38,10 @@ public class Player extends Sprite {
         previousState = State.STANDING;
         stateTimer = 0;
         right = true;
-
         Array<TextureRegion> frames = new Array<TextureRegion>();
         for(int j =0 ;j<=3;j++) {
-        for (int i= 0 ; i<6 ;i++)
-        {
-
-                frames.add(new TextureRegion(getTexture(), i * 90, j*160, 90, 150));
+            for (int i = 0; i < 6; i++) {
+                frames.add(new TextureRegion(getTexture(), i * 90, j * 160, 90, 150));
             }
         }
         run = new Animation(1/30f,frames);
@@ -60,7 +56,7 @@ public class Player extends Sprite {
     {
         if(position.x != playerBody.getPosition().x || position.y != playerBody.getPosition().y)
         {
-            if(playScreen.getWorld().isLocked() == false) {
+            if(!playScreen.getWorld().isLocked()) {
                 position.x = playerBody.getPosition().x;
                 position.y = playerBody.getPosition().y;
                 return true;
@@ -73,7 +69,7 @@ public class Player extends Sprite {
         setPosition(playerBody.getPosition().x - getWidth()/2 , playerBody.getPosition().y - getHeight()/2);
         setRegion(getFrame(deltaTime));
     }
-    public TextureRegion getFrame(float dt)
+    private TextureRegion getFrame(float dt)
     {
         currentState = getState();
         TextureRegion region ;
@@ -110,7 +106,7 @@ public class Player extends Sprite {
 
     public void definePlayer()
     {
-        if(playScreen.getWorld().isLocked()==false) {
+        if(!playScreen.getWorld().isLocked()) {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();

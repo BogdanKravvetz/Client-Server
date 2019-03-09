@@ -1,11 +1,8 @@
 package com.facultate.licenta.conections;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.Player;
-import com.facultate.licenta.objects.Spider;
+
 import com.facultate.licenta.screens.PlayScreen;
 
 import org.json.JSONArray;
@@ -16,13 +13,44 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class SocketEventHandler {
-    PlayScreen playScreen;
-    ConnectionHandler connectionHandler;
-    public  JSONArray spidersFromServer;
-    public  JSONArray spidersFromServerAtStop;
-    public  JSONObject otherPlayerMovedData;
-    public JSONArray playersFromServer;
-    public JSONArray getSpidersFromServer;
+    private PlayScreen playScreen;
+    private ConnectionHandler connectionHandler;
+    private JSONArray spidersFromServer;
+    private JSONArray spidersFromServerAtStop;
+    private JSONObject otherPlayerMovedData;
+    private JSONArray playersFromServer;
+    private JSONArray getSpidersFromServer;
+
+
+    private JSONObject buletFromServer;
+    private JSONArray destroyedSpidersFromServer;
+
+    public JSONArray getSpidersFromServer() {
+        return spidersFromServer;
+    }
+
+    public JSONArray getSpidersFromServerAtStop() {
+        return spidersFromServerAtStop;
+    }
+
+    public JSONObject getOtherPlayerMovedData() {
+        return otherPlayerMovedData;
+    }
+
+    public JSONArray getPlayersFromServer() {
+        return playersFromServer;
+    }
+
+    public JSONArray getGetSpidersFromServer() {
+        return getSpidersFromServer;
+    }
+
+    public JSONObject getBuletFromServer() {
+        return buletFromServer;
+    }
+    public void setBuletFromServer(JSONObject buletFromServer) {
+        this.buletFromServer = buletFromServer;
+    }
 
     public SocketEventHandler(PlayScreen playScreen,ConnectionHandler connectionHandler)
     {
@@ -117,6 +145,16 @@ public class SocketEventHandler {
             public void call(Object... objects) {
                 spidersFromServerAtStop = (JSONArray) objects[0];
 
+            }
+        }).on("updateBullets", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                buletFromServer = (JSONObject) objects[0];
+            }
+        }).on("spidersDestroyed", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                destroyedSpidersFromServer = (JSONArray) objects[0];
             }
         });
         connectionHandler.getSocket().on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {

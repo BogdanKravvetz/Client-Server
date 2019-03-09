@@ -1,6 +1,5 @@
 package com.facultate.licenta.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,21 +9,20 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import io.socket.emitter.Emitter;
+import java.util.UUID;
 
 public class Spider extends Enemy {
-
-
+    private String spiderId ;
     private float stateTime;
     private Animation walk;
     private Array<TextureRegion> frames;
-    public boolean setToDestroy;
-    public boolean destroyed;
-    private int changeDirectionTimer;
+    private boolean setToDestroy;
+    private boolean destroyed;
+
+    public String getSpiderId() {
+        return spiderId;
+    }
+
     public Spider(PlayScreen playScreen, float x, float y) {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
@@ -35,7 +33,7 @@ public class Spider extends Enemy {
         setBounds(x,y,90/Game.PPM,150/Game.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
-        changeDirectionTimer = 2;
+        spiderId = UUID.randomUUID().toString();
     }
 
     public void update(float deltaTime)
@@ -43,6 +41,7 @@ public class Spider extends Enemy {
         stateTime +=deltaTime;
         if(setToDestroy && !destroyed) {
             destroy();
+
         }
         if(!destroyed) {
             setPosition(enemyBody.getPosition().x - getWidth() / 2, enemyBody.getPosition().y - getHeight() / 2);
@@ -52,7 +51,7 @@ public class Spider extends Enemy {
 
     @Override
     protected void defineEnemy() {
-        if(playScreen.getWorld().isLocked()==false) {
+        if(!playScreen.getWorld().isLocked()) {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
@@ -66,7 +65,6 @@ public class Spider extends Enemy {
             fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT | Game.BULLET_BIT;
             fixtureDef.shape = shape;
             enemyBody.createFixture(fixtureDef).setUserData(this);
-            //Gdx.app.log("in","SPIDER");
             //shape.dispose();
         }
         else
@@ -77,7 +75,7 @@ public class Spider extends Enemy {
     @Override
     public void draw(Batch batch)
     {
-        if(!destroyed || stateTime<0.1f)
+        if(!destroyed || stateTime<0.2f)
         {
             super.draw(batch);
         }
@@ -90,11 +88,8 @@ public class Spider extends Enemy {
     public void destroy()
     {
         world.destroyBody(enemyBody);
-        enemyBody = null;
         destroyed = true;
         stateTime = 0;
-        //playScreen.getWorldCreator().getSpiders().removeValue(this,true);
+        enemyBody = null;
     }
-
-
 }

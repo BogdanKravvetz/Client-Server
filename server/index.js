@@ -3,7 +3,10 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var allPlayers = [];
 var allSpiders = [];
+var allBullets = [];
 var timer = 0;
+var xVel = 0;
+var yVel= 0;
 
 server.listen(8081,function()
 {
@@ -35,18 +38,38 @@ io.on('connection',function(socket)
         }
     });
     socket.on('spidersMove', function(data) //event primit de la socket
+    {
+        if(allSpiders.length==0)
         {
             for(var i = 0;i<data.length;i++)
             {
-                allSpiders[i] = data[i];
+                 allSpiders.push(new spider(data[i].id,data[i].x,data[i].y,data[i].xv,data[i].yv,data[i].spawned,data[i].destroyed));
+            }
+        }
+            for(var i = 0;i<data.length;i++)
+            {
+                allSpiders[i].id = data[i].id;
                 allSpiders[i].x = data[i].x;
                 allSpiders[i].y = data[i].y;
-
                 allSpiders[i].xv = Math.random() * 2 - 1;
                 allSpiders[i].yv = Math.random() * 2 - 1;
                 allSpiders[i].spawned = data[i].spawned;
             }
-        });
+            io.sockets.emit('spidersMove',allSpiders);//SERVERUL trimite catre toti clientii.
+    });
+//    socket.on('spidersDestroyed',function(data)
+//    {
+//        for(var i = 0;i<data.length;i++)
+//        {
+//            allSpiders[i].destroyed = data[i].destroyed;
+//        }
+//        io.sockets.emit('spidersDestroyed',allSpiders);
+//    });
+    socket.on('updateBullets', function(data) //event primit de la socket
+            {
+//              allBullets.push(new bullet(data[i].x,data[i].y,data[i].xv,data[i].yv));
+                socket.broadcast.emit('updateBullets',{x:data.x,y:data.y,xv:data.xv,yv:data.yv});
+            });
     socket.on('disconnect',function()
     {
         socket.broadcast.emit('playerDisconnected',{id: socket.id});
@@ -71,7 +94,9 @@ setInterval(function()
 },1000);
 setInterval(function()
 {
-    io.sockets.emit('spidersMove',allSpiders);//SERVERUL trimite catre toti clientii.
+    xVel =  Math.random() * 2 - 1;
+    yVel =  Math.random() * 2 - 1;
+
 },4000);
 
 setInterval(function()
@@ -87,11 +112,19 @@ function player(id,x,y,xv,yv) //obiectul jucator de pe server.
     this.xv = xv;
     this.yv = yv;
 }
-function spider (x,y,xv,yv,spawned)
+function spider (id,x,y,xv,yv,spawned,destroyed)
 {
+    this.id = id;
     this.x = x;
     this.y = y;
     this.xv = xv;
     this.yv = yv;
     this.spawned = spawned;
+}
+function bullet(x,y,xv,yv)
+{
+    this.x = x;
+    this.y = y;
+    this.xv = xv;
+    this.yv = yv;
 }

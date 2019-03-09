@@ -47,7 +47,7 @@ public class WorldCreator {
 
         for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class))//!!!!!!!!GET 2 HARD CODAT !!!!!!!!!!!!! layer-ele se numara de jos in sus de la 0 in tiled
         {
-            if(playScreen.getWorld().isLocked()==false) {
+            if(!playScreen.getWorld().isLocked()) {
                 //dreptunigiul care definste coliziunea
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
 

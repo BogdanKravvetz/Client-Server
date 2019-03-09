@@ -15,6 +15,11 @@ public class ConnectionHandler {
     {
         //89.137.255.89
         //192.168.0.94 - local
+
+        //193.254.231.208  -camin
+        //192.168.82.38   -local - ok
+
+        //192.168.137.42  -hotspot?
         try {
             socket = IO.socket("http://89.137.255.89:8081");
             socket.connect();

@@ -9,7 +9,7 @@ import com.facultate.licenta.screens.PlayScreen;
 //TODO (poate) sincronizare daca jucatorul poate avansa sau nu
 //daca ma asigur ca potiti curenta a jucatorului este corect updatata atunci e posibil sa sar peste asta.
 public class Gate extends InteractiveTileObject{
-    PlayScreen playScreen;
+    private PlayScreen playScreen;
 
     public Gate(PlayScreen playScreen, Rectangle bounds)
     {
@@ -17,9 +17,7 @@ public class Gate extends InteractiveTileObject{
         this.playScreen = playScreen;
         fixture.setUserData(this);
         setCategoryFilter(Game.OBJECT_BIT);
-
     }
-
     @Override
     public void onNoEnemies() {
         if (playScreen.test) {
@@ -28,7 +26,6 @@ public class Gate extends InteractiveTileObject{
                 if(cell!=null)
                     cell.setTile(null);
             }
-            //getCell().setTile(null);
         }
     }
 }

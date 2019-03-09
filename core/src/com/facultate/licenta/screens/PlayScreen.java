@@ -21,7 +21,6 @@ import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
-import com.facultate.licenta.objects.Bullet;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
@@ -33,24 +32,16 @@ import java.util.HashMap;
 public class PlayScreen implements Screen {
     private Game myGame;
     private UpdateServer updateServer;
-
-
-
     private SocketEventHandler socketEvents;
-
     private float inGameTimer;
-
 
     private ConnectionHandler connectionHandler;
     private Player player;
-    private HashMap<String,Player> allPlayers;
+    private HashMap<String, Player> allPlayers;
+
     private InputHandler inputHandler;
     private UpdateObjects updateObjects;
-
-
-
     private Array<DefaultBullet> bullets;
-
     //camera jocului
     private OrthographicCamera gameCamera;
     private Viewport gamePort;
@@ -58,17 +49,11 @@ public class PlayScreen implements Screen {
     private Hud hud;
     //Sagetile pentru mobile.
     private Controller controller;
-
     private TmxMapLoader mapLoader;
-
     //level-ul in sine importat din Tiled
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-
-
-
     private WorldCreator worldCreator;
-
     //tot ce este in word este afectat de physics.
     private World world;
     //randeaza cutii verzi pentru collider-e TODO de ster mai tarziu
@@ -79,47 +64,65 @@ public class PlayScreen implements Screen {
     public boolean test;
     private float timer;
 
-
     public float getInGameTimer() {
         return inGameTimer;
     }
+
     public void setInGameTimer(float inGameTimer) {
         this.inGameTimer = inGameTimer;
     }
+
     public Player getPlayer() {
         return player;
     }
+
     public void setPlayer(Player player) {
         this.player = player;
     }
+
     public Controller getController() {
         return controller;
     }
+
     public World getWorld() {
         return world;
     }
+
     public TextureAtlas getAtlas() {
         return atlas;
     }
+
     public OrthographicCamera getGameCamera() {
         return gameCamera;
     }
+
     public HashMap<String, Player> getAllPlayers() {
         return allPlayers;
     }
+
     public ConnectionHandler getConnectionHandler() {
         return connectionHandler;
     }
+
     public WorldCreator getWorldCreator() {
         return worldCreator;
     }
+
     public SocketEventHandler getSocketEvents() {
         return socketEvents;
     }
+
     public Array<DefaultBullet> getBullets() {
         return bullets;
     }
 
+    public InputHandler getInputHandler() {
+        return inputHandler;
+    }
+
+    public UpdateServer getUpdateServer() {
+        return updateServer;
+    }
 
     public TiledMap getMap() {
         return map;
@@ -127,85 +130,76 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(Game game) {
         this.myGame = game;
-        world = new World(new Vector2(0,0),true); //true indica faptl ce obiectele car nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
+        world = new World(new Vector2(0, 0), true); //true indica faptul ce obiectele care nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
         atlas = new TextureAtlas("Alien.pack");
         allPlayers = new HashMap<String, Player>();
         connectionHandler = new ConnectionHandler();
         connectionHandler.connectSocket();
-        updateServer = new UpdateServer(this,connectionHandler);
-        socketEvents = new SocketEventHandler(this,connectionHandler);
+        updateServer = new UpdateServer(this, connectionHandler);
+        socketEvents = new SocketEventHandler(this, connectionHandler);
         socketEvents.configSocketEvents();
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
-        gamePort = new FitViewport(myGame.WIDTH / Game.PPM,myGame.HEIGHT/ Game.PPM,gameCamera);
-        hud = new Hud(game.batch,this);
+        gamePort = new FitViewport(myGame.WIDTH / Game.PPM, myGame.HEIGHT / Game.PPM, gameCamera);
+        hud = new Hud(game.batch, this);
         controller = new Controller();
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map,1/Game.PPM);
+        renderer = new OrthogonalTiledMapRenderer(map, 1 / Game.PPM);
         //centreaza camera in mijocul lumii? in loc de 0 0
-        gameCamera.position.set(gamePort.getWorldWidth()/2,gamePort.getWorldHeight()/2,0);
+        gameCamera.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
         //creaza lumea, Vector 0 0 inseamna nu e exista gravitatie.
-
         debugRenderer = new Box2DDebugRenderer();
         //initializeaza atlasul cu datele din pack-ul generat de texture packer.
 
-
         test = false;
-        timer= 0;
+        timer = 0;
         world.setContactListener(new WorldContactListener());
         worldCreator = new WorldCreator(this);
         updateObjects = new UpdateObjects(this);
         bullets = new Array<DefaultBullet>();
 
     }
+
     @Override
     public void show() {
 
     }
-    public void update( float delta)
-    {
+
+    public void update(float delta) {
         //update de 60  de ori pe secunda.
-        world.step(1/60f,6,2);
-        timer+=delta;
+        world.step(1 / 60f, 6, 2);
+        timer += delta;
+        if (getWorldCreator().getSpiders().isEmpty() || getWorldCreator().getSpiders() == null) {
+            updateObjects.getSpiders();
+        }
+
+        if (allPlayers.isEmpty() || allPlayers == null) {
+            updateObjects.getOtherPlayers();
+        }
         updateServer.updatePlayerPosition(delta);
         updateServer.updateSpiders(delta);
         updateObjects.moveOtherPlayers();
         updateObjects.moveSpiders();
-        if(getWorldCreator().getSpiders().isEmpty() || getWorldCreator().getSpiders() ==null)
-        {
-            updateObjects.getSpiders();
-        }
-        if(allPlayers.isEmpty() || allPlayers ==null)
-        {
-            updateObjects.getOtherPlayers();
-        }
-        if((int)timer == 5) {
+        updateObjects.updateBullets();
+
+        if ((int) timer == 5) {
             updateObjects.stopSpiders();//nu se vor opri pentru ca move e apelat fiecare frame. dar tot se executa asta.
-            timer=0;
+            timer = 0;
         }
         inputHandler.movementInput(delta);
-        if(player!=null)
-        {
+        if (player != null) {
             gameCamera.position.x = player.playerBody.getPosition().x;
             gameCamera.position.y = player.playerBody.getPosition().y;
             player.update(delta);
         }
-
-        //Gdx.app.log("BUL","nr "+bullets.size);
-        //Gdx.app.log("BUL","nr " +worldCreator.getSpiders().size);
-//        if(!bullets.isEmpty() || bullets !=null)
-//        {
-            for (DefaultBullet bullet: bullets) {
-                bullet.update(delta);
-            }
-//        }
-        for (Enemy enemy : worldCreator.getSpiders())
-        {
+        for (DefaultBullet bullet : bullets) {
+            bullet.update(delta);
+        }
+        for (Enemy enemy : worldCreator.getSpiders()) {
             enemy.update(delta);
         }
         gameCamera.update();
-
         hud.update(delta);
         renderer.setView(gameCamera);
     }
@@ -220,46 +214,38 @@ public class PlayScreen implements Screen {
         //randeaza mapa
         renderer.render();
         //randeaza liniile coliziunilor
-        debugRenderer.render(world,gameCamera.combined);
+        debugRenderer.render(world, gameCamera.combined);
         myGame.batch.setProjectionMatrix(gameCamera.combined);
         myGame.batch.begin();
 
-        if(player!=null)
-        {
+        if (player != null) {
             player.draw(myGame.batch);
         }
-        for (Enemy enemy : worldCreator.getSpiders())
-        {
-            if(enemy!=null && myGame.batch!=null && !worldCreator.getSpiders().isEmpty() && worldCreator.getSpiders()!=null)
+        for (Enemy enemy : worldCreator.getSpiders()) {
+            if (enemy != null && myGame.batch != null && !worldCreator.getSpiders().isEmpty() && worldCreator.getSpiders() != null)
                 enemy.draw(myGame.batch);
         }
         //randeaza toti jucatorii in functie de lista primita de la server.
-        for (HashMap.Entry<String,Player> entry : allPlayers.entrySet())
-        {
+        for (HashMap.Entry<String, Player> entry : allPlayers.entrySet()) {
             entry.getValue().update(delta);
             entry.getValue().draw(myGame.batch);
         }
-//        if(!bullets.isEmpty() || bullets !=null)
-//        {
-            for (DefaultBullet bullet: bullets) {
-                bullet.draw(myGame.batch);
-            }
-//        }
-
+        for (DefaultBullet bullet : bullets) {
+            bullet.draw(myGame.batch);
+        }
         myGame.batch.end();
         //seteaza batch-ul ca acum sa randeze ceea ce camera de la hud vede.
         myGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
         hud.stage.draw();
         controller.draw();
-
     }
 
     @Override
     public void resize(int width, int height) {
 
-        gamePort.update(width,height);
-        controller.resize(width,height);
+        gamePort.update(width, height);
+        controller.resize(width, height);
     }
 
     @Override

@@ -26,6 +26,7 @@ public abstract class Bullet extends Sprite {
     protected abstract void defineBullet();
     public abstract void update(float deltaTime);
     public abstract void onHit();
+    protected abstract void destroy();
 
     @Override
     public void draw(Batch batch) {
