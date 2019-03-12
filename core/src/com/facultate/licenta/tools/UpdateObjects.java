@@ -2,7 +2,6 @@ package com.facultate.licenta.tools;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Player;
 import com.facultate.licenta.objects.Spider;
@@ -75,7 +74,7 @@ public class UpdateObjects {
                     float xVelocity = ((Double) playScreen.getSocketEvents().getGetSpidersFromServer().getJSONObject(i).getDouble("xv")).floatValue();
                     float yVelocity = ((Double) playScreen.getSocketEvents().getGetSpidersFromServer().getJSONObject(i).getDouble("yv")).floatValue();
                     //Gdx.app.log("socketIO", "spider x " + position.x + " spider y: " + position.y);
-                    Spider spider = new Spider(playScreen, position.x * Game.PPM, position.y * Game.PPM);
+                    Spider spider = new Spider(playScreen, position.x * Constants.PPM, position.y * Constants.PPM);
                     if (!playScreen.getWorld().isLocked())
                         spider.enemyBody.setLinearVelocity(xVelocity, yVelocity);
                     playScreen.getWorldCreator().spawned = playScreen.getSocketEvents().getGetSpidersFromServer().getJSONObject(i).getBoolean("spawned");
@@ -100,8 +99,8 @@ public class UpdateObjects {
                 for (int i = 0; i < playScreen.getSocketEvents().getSpidersFromServer().length(); i++) {
                     JSONObject spider = (JSONObject) playScreen.getSocketEvents().getSpidersFromServer().get(i);
                     String id = spider.getString("id");
-                    Double xPosition = spider.getDouble("x") * Game.PPM;
-                    Double yPosition = spider.getDouble("y") * Game.PPM;
+                    Double xPosition = spider.getDouble("x") * Constants.PPM;
+                    Double yPosition = spider.getDouble("y") * Constants.PPM;
                     Double xVelocity = spider.getDouble("xv");
                     Double yVelocity = spider.getDouble("yv");
                     //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);
@@ -176,8 +175,8 @@ public class UpdateObjects {
         try {
             if (playScreen.getSocketEvents().getBuletFromServer() != null) {
                     JSONObject jbullet = (JSONObject) playScreen.getSocketEvents().getBuletFromServer();
-                    Double xPosition = jbullet.getDouble("x") * Game.PPM;
-                    Double yPosition = jbullet.getDouble("y") * Game.PPM;
+                    Double xPosition = jbullet.getDouble("x") * Constants.PPM;
+                    Double yPosition = jbullet.getDouble("y") * Constants.PPM;
                     Double xVelocity = jbullet.getDouble("xv");
                     Double yVelocity = jbullet.getDouble("yv");
                     //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);

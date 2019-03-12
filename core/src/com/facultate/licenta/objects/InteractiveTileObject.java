@@ -12,8 +12,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 public abstract class InteractiveTileObject {
 
@@ -38,11 +38,11 @@ public abstract class InteractiveTileObject {
             FixtureDef fixtureDef = new FixtureDef();
 
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set((bounds.getX() + bounds.getWidth() / 2) / Game.PPM, (bounds.getY() + bounds.getHeight() / 2) / Game.PPM);
+            bodyDef.position.set((bounds.getX() + bounds.getWidth() / 2) / Constants.PPM, (bounds.getY() + bounds.getHeight() / 2) / Constants.PPM);
             //adauga Body-ul in lumea Box2d
             body = world.createBody(bodyDef);
             //defineste forma poligonului
-            shape.setAsBox((bounds.getWidth() / 2) / Game.PPM, (bounds.getHeight() / 2) / Game.PPM);
+            shape.setAsBox((bounds.getWidth() / 2) / Constants.PPM, (bounds.getHeight() / 2) / Constants.PPM);
 
             //seteaza categoria de coliziune.
             //fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
@@ -63,7 +63,7 @@ public abstract class InteractiveTileObject {
     public TiledMapTileLayer.Cell getCell()
     {
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(1);
-        return layer.getCell((int) (body.getPosition().x * Game.PPM / 32), (int) (body.getPosition().y * Game.PPM / 32));
+        return layer.getCell((int) (body.getPosition().x * Constants.PPM / 32), (int) (body.getPosition().y * Constants.PPM / 32));
     }
     public Array<TiledMapTileLayer.Cell> getGateCells()
     {
@@ -71,7 +71,7 @@ public abstract class InteractiveTileObject {
         TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(1);
         for (int i=0;i<9;i++)
         {
-            cells.add(layer.getCell((int) ((body.getPosition().x+((32*i)/Game.PPM) * Game.PPM / 32)), (int) (body.getPosition().y * Game.PPM / 32)));
+            cells.add(layer.getCell((int) ((body.getPosition().x+((32*i)/Constants.PPM) * Constants.PPM / 32)), (int) (body.getPosition().y * Constants.PPM / 32)));
         }
         return cells;
     }

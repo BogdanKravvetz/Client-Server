@@ -7,19 +7,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.objects.Gate;
 import com.facultate.licenta.objects.Spider;
 import com.facultate.licenta.screens.PlayScreen;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class WorldCreator {
     public Array<Spider> getSpiders() {
@@ -52,14 +47,14 @@ public class WorldCreator {
                 Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
                 bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Game.PPM, (rect.getY() + rect.getHeight() / 2) / Game.PPM);
+                bodyDef.position.set((rect.getX() + rect.getWidth() / 2) / Constants.PPM, (rect.getY() + rect.getHeight() / 2) / Constants.PPM);
                 //adauga Body-ul in lumea Box2d
                 body = world.createBody(bodyDef);
                 //defineste forma poligonului
-                shape.setAsBox((rect.getWidth() / 2) / Game.PPM, (rect.getHeight() / 2) / Game.PPM);
+                shape.setAsBox((rect.getWidth() / 2) / Constants.PPM, (rect.getHeight() / 2) / Constants.PPM);
 
                 //seteaza categoria de coliziune.
-                fixtureDef.filter.categoryBits = Game.OBJECT_BIT;
+                fixtureDef.filter.categoryBits = Constants.OBJECT_BIT;
 
                 fixtureDef.shape = shape;
                 //adauga fixture in body

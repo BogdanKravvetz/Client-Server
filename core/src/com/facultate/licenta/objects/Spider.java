@@ -7,8 +7,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
+
 import java.util.UUID;
 
 public class Spider extends Enemy {
@@ -30,7 +31,7 @@ public class Spider extends Enemy {
             frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 150));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/Game.PPM,150/Game.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,90/Constants.PPM,150/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
         spiderId = UUID.randomUUID().toString();
@@ -55,14 +56,14 @@ public class Spider extends Enemy {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
-            bodyDef.position.set(getX() / Game.PPM, getY() / Game.PPM);
+            bodyDef.position.set(getX() / Constants.PPM, getY() / Constants.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             enemyBody = this.world.createBody(bodyDef);
-            shape.setAsBox(30 / Game.PPM, 30 / Game.PPM);
+            shape.setAsBox(30 / Constants.PPM, 30 / Constants.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-            fixtureDef.filter.categoryBits = Game.ENEMY_BIT;
+            fixtureDef.filter.categoryBits = Constants.ENEMY_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
-            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT | Game.BULLET_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.BULLET_BIT;
             fixtureDef.shape = shape;
             enemyBody.createFixture(fixtureDef).setUserData(this);
             //shape.dispose();

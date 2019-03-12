@@ -10,8 +10,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 public class Player extends Sprite {
     public enum State {STANDING,RUNNING}
@@ -49,7 +49,7 @@ public class Player extends Sprite {
         definePlayer();
         //initializeaza sprite-ul cu textura de la coordonatele x,y de lungime si inaltime.
         sprite = new TextureRegion(getTexture(),0,0,80,150);
-        setBounds(0,0,80/Game.PPM,150/Game.PPM);
+        setBounds(0,0,80/Constants.PPM,150/Constants.PPM);
         setRegion(sprite);
     }
     public boolean hasMoved()
@@ -110,16 +110,16 @@ public class Player extends Sprite {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
-            bodyDef.position.set(300 / Game.PPM, 300 / Game.PPM);
+            bodyDef.position.set(300 / Constants.PPM, 300 / Constants.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             playerBody = this.world.createBody(bodyDef);
-            shape.setAsBox(30 / Game.PPM, 70 / Game.PPM);
+            shape.setAsBox(30 / Constants.PPM, 70 / Constants.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-            fixtureDef.filter.categoryBits = Game.PLAYER_BIT;
+            fixtureDef.filter.categoryBits = Constants.PLAYER_BIT;
 
             //biti cu care jucatorul poate avea coliziuni
             //MASCA
-            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT;
             fixtureDef.shape = shape;
             playerBody.createFixture(fixtureDef).setUserData("player");
             shape.dispose();

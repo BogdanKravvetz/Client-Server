@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 import java.util.Locale;
 
@@ -21,13 +21,13 @@ public class Hud implements Disposable {
     private Viewport viewport;
     private PlayScreen playScreen;
 
-    Label timeLabel;
-    Label inGameTimerLabel;
+    private Label timeLabel;
+    private Label inGameTimerLabel;
 
     public Hud(SpriteBatch spriteBatch, PlayScreen playScreen)
     {
         this.playScreen = playScreen;
-        viewport = new FitViewport(Game.WIDTH,Game.HEIGHT,new OrthographicCamera());
+        viewport = new FitViewport(Constants.WIDTH,Constants.HEIGHT,new OrthographicCamera());
         stage = new Stage(viewport,spriteBatch);
 
         Table table = new Table();

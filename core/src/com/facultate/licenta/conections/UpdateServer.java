@@ -83,7 +83,7 @@ public class UpdateServer {
                         jspider.put("y", 0);
                         jspider.put("xv",0);
                         jspider.put("yv", 0);
-                        jspider.put("spawned", true);
+                        jspider.put("spawned", false);
                         data.put(jspider);
                     }
                 }
@@ -113,46 +113,3 @@ public class UpdateServer {
         }
     }
 }
-
-//    public void updateDestroyedSpiders(float deltaTime)
-//    {
-//        if(timer>=UPDATE_TIME) {
-//            JSONArray data = new JSONArray();
-//            try {
-//                for (Spider spider: playScreen.getWorldCreator().getSpiders()) {
-//                        JSONObject jspider = new JSONObject();
-//                        jspider.put("destroyed",spider.setToDestroy);
-//                        data.put(jspider);
-//                }
-//                //Gdx.app.log("socketIO", "Trimis" );
-//
-//                connectionHandler.getSocket().emit("spidersDestroyed", data);//trimite event catre server.
-//                //timer = 0;
-//            } catch (JSONException e) {
-//                Gdx.app.log("socketIO", "error sending update data for dead spiders");
-//            }
-//        }
-//    }
-//public void updateBullets2()
-//    {
-//        if(timer>=UPDATE_TIME) {
-//            JSONArray data = new JSONArray();
-//            try {
-//                for (DefaultBullet bullet: playScreen.getBullets()) {
-//                    if(bullet.bulletBody!=null) {
-//                        JSONObject jBullet = new JSONObject();
-//                        jBullet.put("x", bullet.bulletBody.getPosition().x);
-//                        jBullet.put("y", bullet.bulletBody.getPosition().y);
-//                        jBullet.put("xv", bullet.bulletBody.getLinearVelocity().x);
-//                        jBullet.put("yv", bullet.bulletBody.getLinearVelocity().y);
-//                        data.put(jBullet);
-//                    }
-//                }
-//
-//                connectionHandler.getSocket().emit("updateBullets", data);//trimite event catre server.
-//                //timer = 0;
-//            } catch (JSONException e) {
-//                Gdx.app.log("socketIO", "error sending update data for bullets");
-//            }
-//        }
-//    }

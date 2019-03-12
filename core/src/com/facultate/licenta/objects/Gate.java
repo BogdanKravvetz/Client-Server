@@ -2,8 +2,8 @@ package com.facultate.licenta.objects;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 
 //TODO (poate) sincronizare daca jucatorul poate avansa sau nu
@@ -16,12 +16,12 @@ public class Gate extends InteractiveTileObject{
         super(playScreen,bounds);
         this.playScreen = playScreen;
         fixture.setUserData(this);
-        setCategoryFilter(Game.OBJECT_BIT);
+        setCategoryFilter(Constants.OBJECT_BIT);
     }
     @Override
     public void onNoEnemies() {
         if (playScreen.test) {
-            setCategoryFilter(Game.DESTROYED_BIT);
+            setCategoryFilter(Constants.DESTROYED_BIT);
             for (TiledMapTileLayer.Cell cell: getGateCells()) {
                 if(cell!=null)
                     cell.setTile(null);

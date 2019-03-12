@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.Bullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.InteractiveTileObject;
@@ -33,23 +32,23 @@ public class WorldContactListener implements ContactListener {
                 ((InteractiveTileObject) obj.getUserData()).onNoEnemies();
         }
         switch (cDef){
-            case Game.BULLET_BIT | Game.ENEMY_BIT:
-                if(fixA.getFilterData().categoryBits == Game.BULLET_BIT) {
+            case Constants.BULLET_BIT | Constants.ENEMY_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.BULLET_BIT) {
                     ((Bullet) fixA.getUserData()).onHit();
                     ((Enemy) fixB.getUserData()).onEnemyHit();
                 }
-                else if(fixB.getFilterData().categoryBits == Game.BULLET_BIT)
+                else if(fixB.getFilterData().categoryBits == Constants.BULLET_BIT)
                 {
                     ((Bullet)fixB.getUserData()).onHit();
                     ((Enemy) fixA.getUserData()).onEnemyHit();
                 }
                 break;
 
-            case Game.BULLET_BIT | Game.OBJECT_BIT:
-                if(fixA.getFilterData().categoryBits == Game.BULLET_BIT) {
+            case Constants.BULLET_BIT | Constants.OBJECT_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.BULLET_BIT) {
                     ((Bullet) fixA.getUserData()).onHit();
                 }
-                else if(fixB.getFilterData().categoryBits == Game.BULLET_BIT)
+                else if(fixB.getFilterData().categoryBits == Constants.BULLET_BIT)
                 {
                     ((Bullet)fixB.getUserData()).onHit();
                 }

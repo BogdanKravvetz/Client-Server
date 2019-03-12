@@ -2,9 +2,9 @@ package com.facultate.licenta.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 public class InputHandler {
 
@@ -29,23 +29,6 @@ public class InputHandler {
     {
         if (playScreen.getPlayer()!=null)
         {
-//            if(Gdx.input.isKeyPressed(Input.Keys.A) && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
-//            {
-//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(-0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
-//            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.D) && playScreen.getPlayer().playerBody.getLinearVelocity().x<=3)
-//            {
-//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0.5f,0f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
-//            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.S) && playScreen.getPlayer().playerBody.getLinearVelocity().y >= -3)
-//            {
-//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,-0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
-//            }
-//            if(Gdx.input.isKeyPressed(Input.Keys.W) && playScreen.getPlayer().playerBody.getLinearVelocity().y<=3)
-//            {
-//                playScreen.getPlayer().playerBody.applyLinearImpulse(new Vector2(0f,0.5f),playScreen.getPlayer().playerBody.getWorldCenter(),true);
-//            }
-
             if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
             {
                 if(!playScreen.getWorld().isLocked()) {
@@ -86,7 +69,7 @@ public class InputHandler {
                 if(!playScreen.getWorld().isLocked()) {
                     if (movementVector == null)
                         movementVector = new Vector2(0.5f,0);
-                    DefaultBullet bullet = new DefaultBullet(playScreen,playScreen.getPlayer().playerBody.getPosition().x * Game.PPM,playScreen.getPlayer().playerBody.getPosition().y *Game.PPM);
+                    DefaultBullet bullet = new DefaultBullet(playScreen,playScreen.getPlayer().playerBody.getPosition().x * Constants.PPM,playScreen.getPlayer().playerBody.getPosition().y *Constants.PPM);
                     Vector2 shotVector = new Vector2(movementVector.x*5,movementVector.y*5);
                     //Gdx.app.log("in","shot"+shotVector);
                     bullet.bulletBody.applyLinearImpulse(shotVector,bullet.bulletBody.getWorldCenter(),true);

@@ -7,8 +7,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
-import com.facultate.licenta.Game;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 public class DefaultBullet extends Bullet {
 
@@ -27,7 +27,7 @@ public class DefaultBullet extends Bullet {
             frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 50));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/ Game.PPM,50/Game.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,90/ Constants.PPM,50/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
         lifeSpan = 8;
@@ -40,15 +40,15 @@ public class DefaultBullet extends Bullet {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
-            bodyDef.position.set(getX() / Game.PPM, getY() / Game.PPM);
+            bodyDef.position.set(getX() / Constants.PPM, getY() / Constants.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bulletBody = this.world.createBody(bodyDef);
             //Gdx.app.log("Bullet",bulletBody.toString());
-            shape.setAsBox(30 / Game.PPM, 30 / Game.PPM);
+            shape.setAsBox(30 / Constants.PPM, 30 / Constants.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
-            fixtureDef.filter.categoryBits = Game.BULLET_BIT;
+            fixtureDef.filter.categoryBits = Constants.BULLET_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
-            fixtureDef.filter.maskBits = Game.DEFAULT_BIT | Game.OBJECT_BIT | Game.ENEMY_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.ENEMY_BIT;
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
             bulletBody.createFixture(fixtureDef).setUserData(this);

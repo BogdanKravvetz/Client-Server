@@ -24,6 +24,7 @@ import com.facultate.licenta.input.InputHandler;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.tools.Constants;
 import com.facultate.licenta.tools.UpdateObjects;
 import com.facultate.licenta.tools.WorldContactListener;
 import com.facultate.licenta.tools.WorldCreator;
@@ -140,12 +141,12 @@ public class PlayScreen implements Screen {
         socketEvents.configSocketEvents();
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
-        gamePort = new FitViewport(myGame.WIDTH / Game.PPM, myGame.HEIGHT / Game.PPM, gameCamera);
+        gamePort = new FitViewport(Constants.WIDTH / Constants.PPM, Constants.HEIGHT / Constants.PPM, gameCamera);
         hud = new Hud(game.batch, this);
-        controller = new Controller();
+        controller = new Controller(myGame);
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map, 1 / Game.PPM);
+        renderer = new OrthogonalTiledMapRenderer(map, 1 / Constants.PPM);
         //centreaza camera in mijocul lumii? in loc de 0 0
         gameCamera.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
         //creaza lumea, Vector 0 0 inseamna nu e exista gravitatie.
@@ -174,7 +175,7 @@ public class PlayScreen implements Screen {
             updateObjects.getSpiders();
         }
 
-        if (allPlayers.isEmpty() || allPlayers == null) {
+        if (allPlayers.isEmpty()) {
             updateObjects.getOtherPlayers();
         }
         updateServer.updatePlayerPosition(delta);
