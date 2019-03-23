@@ -29,31 +29,31 @@ public class InputHandler {
     {
         if (playScreen.getPlayer()!=null)
         {
-            if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -3)
+            if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
-                    movementVector = new Vector2(-0.5f, 0f);
+                    movementVector = new Vector2(-playScreen.getPlayer().getPlayerStats().getAccelerationRate(), 0f);
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
                 }
             }
-            if(playScreen.getController().isRightPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x<=3)
+            if(playScreen.getController().isRightPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x<=playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
-                    movementVector = new Vector2(0.5f, 0f);
+                    movementVector = new Vector2(playScreen.getPlayer().getPlayerStats().getAccelerationRate(), 0f);
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
                 }
             }
-            if(playScreen.getController().isDownPressed()&& playScreen.getPlayer().playerBody.getLinearVelocity().y >= -3)
+            if(playScreen.getController().isDownPressed()&& playScreen.getPlayer().playerBody.getLinearVelocity().y >= -playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
-                    movementVector = new Vector2(0f, -0.5f);
+                    movementVector = new Vector2(0f, -playScreen.getPlayer().getPlayerStats().getAccelerationRate());
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
                 }
             }
-            if(playScreen.getController().isUpPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().y<=3)
+            if(playScreen.getController().isUpPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().y<=playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
-                    movementVector = new Vector2(0f, 0.5f);
+                    movementVector = new Vector2(0f, playScreen.getPlayer().getPlayerStats().getAccelerationRate());
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
 
                 }
@@ -68,9 +68,9 @@ public class InputHandler {
             {
                 if(!playScreen.getWorld().isLocked()) {
                     if (movementVector == null)
-                        movementVector = new Vector2(0.5f,0);
+                        movementVector = new Vector2(playScreen.getPlayer().getPlayerStats().getAccelerationRate(),0);
                     DefaultBullet bullet = new DefaultBullet(playScreen,playScreen.getPlayer().playerBody.getPosition().x * Constants.PPM,playScreen.getPlayer().playerBody.getPosition().y *Constants.PPM);
-                    Vector2 shotVector = new Vector2(movementVector.x*5,movementVector.y*5);
+                    Vector2 shotVector = new Vector2(movementVector.x * bullet.getBulletStats().getSpeed(),movementVector.y * bullet.getBulletStats().getSpeed());
                     //Gdx.app.log("in","shot"+shotVector);
                     bullet.bulletBody.applyLinearImpulse(shotVector,bullet.bulletBody.getWorldCenter(),true);
                     playScreen.getBullets().add(bullet);

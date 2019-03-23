@@ -132,7 +132,7 @@ public class PlayScreen implements Screen {
     public PlayScreen(Game game) {
         this.myGame = game;
         world = new World(new Vector2(0, 0), true); //true indica faptul ce obiectele care nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
-        atlas = new TextureAtlas("Alien.pack");
+        atlas = new TextureAtlas("Characters.pack");
         allPlayers = new HashMap<String, Player>();
         connectionHandler = new ConnectionHandler();
         connectionHandler.connectSocket();
@@ -141,7 +141,7 @@ public class PlayScreen implements Screen {
         socketEvents.configSocketEvents();
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
-        gamePort = new FitViewport(Constants.WIDTH / Constants.PPM, Constants.HEIGHT / Constants.PPM, gameCamera);
+        gamePort = new FitViewport(896 / Constants.PPM, 504 / Constants.PPM, gameCamera);
         hud = new Hud(game.batch, this);
         controller = new Controller(myGame);
         mapLoader = new TmxMapLoader();

@@ -1,5 +1,6 @@
 package com.facultate.licenta.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.stats.EnemyStats;
 import com.facultate.licenta.tools.Constants;
 
 import java.util.UUID;
@@ -19,7 +21,11 @@ public class Spider extends Enemy {
     private Array<TextureRegion> frames;
     private boolean setToDestroy;
     private boolean destroyed;
+    private EnemyStats enemyStats;
 
+    public EnemyStats getEnemyStats() {
+        return enemyStats;
+    }
     public String getSpiderId() {
         return spiderId;
     }
@@ -28,13 +34,14 @@ public class Spider extends Enemy {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
         for (int i=0;i<4;i++)
-            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 150));
+            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),i * 90, 0, 90, 80));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/Constants.PPM,150/Constants.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,90/Constants.PPM,80/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
         spiderId = UUID.randomUUID().toString();
+        enemyStats = new EnemyStats();
     }
 
     public void update(float deltaTime)
@@ -83,8 +90,11 @@ public class Spider extends Enemy {
     }
 
     @Override
-    public void onEnemyHit() {
-        setToDestroy = true;
+    public void onEnemyHit(Bullet bullet) {
+        enemyStats.setCurrentHp(enemyStats.getCurrentHp()-bullet.getBulletStats().getDamage());
+        Gdx.app.log("SPIDER",enemyStats.getCurrentHp()+" HP");
+        if(enemyStats.getCurrentHp() <= 0f)
+            setToDestroy = true;
     }
     public void destroy()
     {

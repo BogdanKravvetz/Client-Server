@@ -35,12 +35,12 @@ public class WorldContactListener implements ContactListener {
             case Constants.BULLET_BIT | Constants.ENEMY_BIT:
                 if(fixA.getFilterData().categoryBits == Constants.BULLET_BIT) {
                     ((Bullet) fixA.getUserData()).onHit();
-                    ((Enemy) fixB.getUserData()).onEnemyHit();
+                    ((Enemy) fixB.getUserData()).onEnemyHit(((Bullet) fixA.getUserData()));
                 }
                 else if(fixB.getFilterData().categoryBits == Constants.BULLET_BIT)
                 {
                     ((Bullet)fixB.getUserData()).onHit();
-                    ((Enemy) fixA.getUserData()).onEnemyHit();
+                    ((Enemy) fixA.getUserData()).onEnemyHit(((Bullet) fixB.getUserData()));
                 }
                 break;
 

@@ -1,11 +1,11 @@
 package com.facultate.licenta.tools;
 
 public class Constants {
-
-    public static final int WIDTH = 1280;
-    public static final int HEIGHT = 720;
+//1280 , 720
+    public static final int WIDTH =1280;
+    public static final int HEIGHT =720 ;
     //pixeli/metru, scalarea pentru Box2d
-    public static final float PPM = 100;
+    public static final float PPM = 64;
 
     public static final short DEFAULT_BIT = 1;
     public static final short PLAYER_BIT = 2;

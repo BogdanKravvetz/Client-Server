@@ -19,7 +19,7 @@ public abstract class Enemy extends Sprite {
 
     public Enemy(PlayScreen playScreen,float x, float y)
     {
-        super(playScreen.getAtlas().findRegion("sprite"));
+        super(playScreen.getAtlas().findRegion("Character"));
         this.playScreen = playScreen;
         this.world = playScreen.getWorld();
         setPosition(x,y);
@@ -28,7 +28,7 @@ public abstract class Enemy extends Sprite {
     }
     protected abstract void defineEnemy();
     public abstract void update(float deltaTime);
-    public abstract void onEnemyHit();
+    public abstract void onEnemyHit(Bullet bullet);
 
     public void reverseVelocity(boolean x,boolean y)
     {

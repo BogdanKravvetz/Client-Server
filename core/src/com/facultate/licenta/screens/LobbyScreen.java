@@ -2,12 +2,9 @@ package com.facultate.licenta.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -15,11 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.Selection;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.facultate.licenta.Game;
@@ -28,8 +22,8 @@ import com.facultate.licenta.tools.Constants;
 public class LobbyScreen implements Screen {
     private com.facultate.licenta.Game myGame;
 
-    private int buttonWidth = 600;
-    private int buttonHeight = 200;
+    private int buttonWidth = 300;
+    private int buttonHeight = 100;
 
     private OrthographicCamera menuCamera;
     private Viewport menuPort;
@@ -91,15 +85,10 @@ public class LobbyScreen implements Screen {
         ScrollPane scrollPane;
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"),atlas);
-        //final List<String> list = new List<String>(skin);
-//        List.ListStyle style = new List.ListStyle();
-//        style.font = new BitmapFont();
-//        style.fontColorSelected = Color.BROWN;
-//        style.fontColorUnselected = Color.BLUE;
         List<String> list = new List<String>(uiSkin);
-        String[] strings = new String[20];
-        for (int i = 0, k = 0; i < 20; i++) {
-            strings[k++] = "String: " + i;
+        String[] strings = new String[4];
+        for (int i = 0, k = 0; i < 4; i++) {
+            strings[k++] = "Player: " + i;
 
         }
         list.setItems(strings);
@@ -114,13 +103,12 @@ public class LobbyScreen implements Screen {
         Table table = new Table();
         table.setWidth(Constants.WIDTH);
         table.setHeight(Constants.HEIGHT);
-        table.center().right();//aliniaza
-        table.add(back).size(back.getWidth()/2,back.getHeight()/2);
+        table.center();//aliniaza
+        table.add(scrollPane).size(400,300);
         table.add(back).size(back.getWidth(),back.getHeight());
         table.row().pad(5,5,5,5);
-//        table.add();
+        table.add();
         table.add(ready).size(ready.getWidth(),ready.getHeight());
-        table.add(back).size(back.getWidth()/2,back.getHeight()/2);
         stage.addActor(table);
     }
 

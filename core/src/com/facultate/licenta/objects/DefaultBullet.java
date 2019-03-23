@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.stats.BulletStats;
 import com.facultate.licenta.tools.Constants;
 
 public class DefaultBullet extends Bullet {
@@ -17,26 +18,24 @@ public class DefaultBullet extends Bullet {
     private Array<TextureRegion> frames;
     private boolean setToDestroy;
     private boolean destroyed;
-    private float lifeSpan;
 
     public DefaultBullet(PlayScreen playScreen,float x,float y)
     {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
         for (int i=0;i<1;i++)
-            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("sprite"),i * 90, 0, 90, 50));
+            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),i * 32, 0, 32, 32));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/ Constants.PPM,50/Constants.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,32/ Constants.PPM,32/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
-        lifeSpan = 8;
+
     }
 
     @Override
     protected void defineBullet() {
         if(!playScreen.getWorld().isLocked()) {
-
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
@@ -44,7 +43,7 @@ public class DefaultBullet extends Bullet {
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bulletBody = this.world.createBody(bodyDef);
             //Gdx.app.log("Bullet",bulletBody.toString());
-            shape.setAsBox(30 / Constants.PPM, 30 / Constants.PPM);
+            shape.setAsBox(10 / Constants.PPM, 10 / Constants.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
             fixtureDef.filter.categoryBits = Constants.BULLET_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
@@ -63,7 +62,7 @@ public class DefaultBullet extends Bullet {
     public void update(float deltaTime)
     {
         stateTime +=deltaTime;
-        if((int)stateTime == (int)lifeSpan)
+        if((int)stateTime == (int)bulletStats.getLifeSpan())
         {
             setToDestroy = true;
         }

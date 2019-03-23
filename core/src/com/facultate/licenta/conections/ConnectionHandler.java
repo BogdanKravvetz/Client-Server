@@ -21,7 +21,7 @@ public class ConnectionHandler {
 
         //192.168.137.42  -hotspot?
         try {
-            socket = IO.socket("http://192.168.0.100:8081");
+            socket = IO.socket("http://89.137.255.89:8081");
             socket.connect();
         }
         catch (Exception e) {
