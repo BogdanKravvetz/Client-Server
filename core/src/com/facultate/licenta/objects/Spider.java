@@ -4,10 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
+import com.facultate.licenta.items.ItemDef;
+import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.screens.PlayScreen;
 import com.facultate.licenta.stats.EnemyStats;
 import com.facultate.licenta.tools.Constants;
@@ -93,8 +96,15 @@ public class Spider extends Enemy {
     public void onEnemyHit(Bullet bullet) {
         enemyStats.setCurrentHp(enemyStats.getCurrentHp()-bullet.getBulletStats().getDamage());
         Gdx.app.log("SPIDER",enemyStats.getCurrentHp()+" HP");
-        if(enemyStats.getCurrentHp() <= 0f)
+        if(enemyStats.getCurrentHp() <= 0f) {
+            Gdx.app.log("SPIDER"," Crystal");
+            playScreen.spawnItem(new ItemDef(new Vector2(enemyBody.getPosition().x, enemyBody.getPosition().y), LifeCrystal.class));
             setToDestroy = true;
+        }
+    }
+    public void setSetToDestroy()
+    {
+        setToDestroy = true;
     }
     public void destroy()
     {

@@ -28,8 +28,8 @@ public class WorldContactListener implements ContactListener {
             Fixture player = fixA.getUserData() == "player" ? fixA : fixB;
             Fixture obj = player == fixA ? fixB : fixA;
 
-            if(obj.getUserData()!=null)
-                ((InteractiveTileObject) obj.getUserData()).onNoEnemies();
+//            if(obj.getUserData()!=null)
+//                ((InteractiveTileObject) obj.getUserData()).onNoEnemies();
         }
         switch (cDef){
             case Constants.BULLET_BIT | Constants.ENEMY_BIT:

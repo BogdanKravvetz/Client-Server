@@ -1,5 +1,6 @@
 package com.facultate.licenta.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,6 +22,9 @@ import com.facultate.licenta.conections.ConnectionHandler;
 import com.facultate.licenta.conections.SocketEventHandler;
 import com.facultate.licenta.conections.UpdateServer;
 import com.facultate.licenta.input.InputHandler;
+import com.facultate.licenta.items.Item;
+import com.facultate.licenta.items.ItemDef;
+import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
@@ -30,7 +34,13 @@ import com.facultate.licenta.tools.WorldContactListener;
 import com.facultate.licenta.tools.WorldCreator;
 
 import java.util.HashMap;
+import java.util.PriorityQueue;
+
 public class PlayScreen implements Screen {
+    public Game getMyGame() {
+        return myGame;
+    }
+
     private Game myGame;
     private UpdateServer updateServer;
     private SocketEventHandler socketEvents;
@@ -57,13 +67,18 @@ public class PlayScreen implements Screen {
     private WorldCreator worldCreator;
     //tot ce este in word este afectat de physics.
     private World world;
-    //randeaza cutii verzi pentru collider-e TODO de ster mai tarziu
+    //randeaza cutii verzi pentru collider-e TODO de sters mai tarziu
     private Box2DDebugRenderer debugRenderer;
     //Pachet care contine mai multe sprite sheet-uri
     private TextureAtlas atlas;
 
     public boolean test;
     private float timer;
+
+    private Array<Item> items;
+    private PriorityQueue<ItemDef> itemsToSpawn;
+
+    private LobbyScreen lobbyScreen;
 
     public float getInGameTimer() {
         return inGameTimer;
@@ -129,12 +144,13 @@ public class PlayScreen implements Screen {
         return map;
     }
 
-    public PlayScreen(Game game) {
+    public PlayScreen(Game game,LobbyScreen lobbyScreen) {
         this.myGame = game;
         world = new World(new Vector2(0, 0), true); //true indica faptul ce obiectele care nu se misca sunt puse in sleep, nu sunt calculate pyhx simulation.
         atlas = new TextureAtlas("Characters.pack");
         allPlayers = new HashMap<String, Player>();
-        connectionHandler = new ConnectionHandler();
+        //connectionHandler = new ConnectionHandler();
+        connectionHandler =  lobbyScreen.getConnectionHandler();
         connectionHandler.connectSocket();
         updateServer = new UpdateServer(this, connectionHandler);
         socketEvents = new SocketEventHandler(this, connectionHandler);
@@ -159,9 +175,23 @@ public class PlayScreen implements Screen {
         worldCreator = new WorldCreator(this);
         updateObjects = new UpdateObjects(this);
         bullets = new Array<DefaultBullet>();
-
+        items = new Array<Item>();
+        itemsToSpawn = new PriorityQueue<ItemDef>();
     }
+    public void spawnItem(ItemDef itemDef){
 
+
+        itemsToSpawn.add(itemDef);
+    }
+    public void handleSpawningItems(){
+        if(!itemsToSpawn.isEmpty())
+        {
+            ItemDef iDef = itemsToSpawn.poll();
+            if(iDef.type == LifeCrystal.class){
+                items.add(new LifeCrystal(this,iDef.position.x,iDef.position.y));
+            }
+        }
+    }
     @Override
     public void show() {
 
@@ -170,6 +200,7 @@ public class PlayScreen implements Screen {
     public void update(float delta) {
         //update de 60  de ori pe secunda.
         world.step(1 / 60f, 6, 2);
+
         timer += delta;
         if (getWorldCreator().getSpiders().isEmpty() || getWorldCreator().getSpiders() == null) {
             updateObjects.getSpiders();
@@ -183,7 +214,7 @@ public class PlayScreen implements Screen {
         updateObjects.moveOtherPlayers();
         updateObjects.moveSpiders();
         updateObjects.updateBullets();
-
+        handleSpawningItems();
         if ((int) timer == 5) {
             updateObjects.stopSpiders();//nu se vor opri pentru ca move e apelat fiecare frame. dar tot se executa asta.
             timer = 0;
@@ -200,6 +231,10 @@ public class PlayScreen implements Screen {
         for (Enemy enemy : worldCreator.getSpiders()) {
             enemy.update(delta);
         }
+        for(Item item : items)
+        {
+            item.update(delta);
+        }
         gameCamera.update();
         hud.update(delta);
         renderer.setView(gameCamera);
@@ -209,7 +244,7 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         //separa logica update de render
         update(delta);
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         //randeaza mapa
@@ -231,15 +266,21 @@ public class PlayScreen implements Screen {
             entry.getValue().update(delta);
             entry.getValue().draw(myGame.batch);
         }
+        for (Item item : items) {
+            item.draw(myGame.batch);
+        }
         for (DefaultBullet bullet : bullets) {
             bullet.draw(myGame.batch);
         }
+
         myGame.batch.end();
         //seteaza batch-ul ca acum sa randeze ceea ce camera de la hud vede.
         myGame.batch.setProjectionMatrix(hud.stage.getCamera().combined);
 
         hud.stage.draw();
-        controller.draw();
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            controller.draw();
+        }
     }
 
     @Override

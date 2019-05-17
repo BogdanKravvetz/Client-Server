@@ -58,6 +58,8 @@ public class SocketEventHandler {
         this.connectionHandler = connectionHandler;
     }
 
+
+
     //implementarea event-urilor socket
     public void configSocketEvents()
     {
@@ -156,6 +158,11 @@ public class SocketEventHandler {
             public void call(Object... objects) {
                 destroyedSpidersFromServer = (JSONArray) objects[0];
             }
+        }).on("start", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+
+            }
         });
         connectionHandler.getSocket().on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
@@ -169,6 +176,7 @@ public class SocketEventHandler {
                 try {
                     String id = data.getString("id");
                     Gdx.app.log("socketIO","Player with id: "+ id+" disconnected");
+                    playScreen.getAllPlayers().get(id).setToDestroy();
                     playScreen.getAllPlayers().remove(id);
                 }
                 catch (JSONException e)

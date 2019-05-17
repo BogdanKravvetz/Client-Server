@@ -83,7 +83,7 @@ public class UpdateServer {
                         jspider.put("y", 0);
                         jspider.put("xv",0);
                         jspider.put("yv", 0);
-                        jspider.put("spawned", false);
+                        jspider.put("spawned", true);
                         data.put(jspider);
                     }
                 }

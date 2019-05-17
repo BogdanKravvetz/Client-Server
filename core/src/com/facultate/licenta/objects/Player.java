@@ -31,6 +31,8 @@ public class Player extends Sprite {
     private TextureRegion sprite;
     private PlayScreen playScreen;
     private PlayerStats playerStats;
+    private boolean destroyed;
+    private boolean setToDestroy;
 
     public PlayerStats getPlayerStats() {
         return playerStats;
@@ -68,6 +70,8 @@ public class Player extends Sprite {
         setBounds(0,0,64/Constants.PPM,64/Constants.PPM);
         setRegion(sprite);
         playerStats = new PlayerStats();
+        setToDestroy = false;
+        destroyed = false;
     }
     public boolean hasMoved()
     {
@@ -82,9 +86,15 @@ public class Player extends Sprite {
         return false;
     }
     public void update(float deltaTime) {
-        //updateaza pozitia sprite=ului in functie de pozisia corpului fizic
-        setPosition(playerBody.getPosition().x - getWidth()/2 , playerBody.getPosition().y - getHeight()/2);
-        setRegion(getFrame(deltaTime));
+
+        if(setToDestroy && !destroyed) {
+            destroy();
+        }
+        if(!destroyed) {
+            //updateaza pozitia sprite=ului in functie de pozisia corpului fizic
+            setPosition(playerBody.getPosition().x - getWidth() / 2, playerBody.getPosition().y - getHeight() / 2);
+            setRegion(getFrame(deltaTime));
+        }
     }
     private TextureRegion getFrame(float dt)
     {
@@ -157,7 +167,7 @@ public class Player extends Sprite {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
-            bodyDef.position.set(300 / Constants.PPM, 300 / Constants.PPM);
+            bodyDef.position.set(300 / Constants.PPM, 300 / Constants.PPM); //3350 , 2300
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             playerBody = this.world.createBody(bodyDef);
             shape.setAsBox(16 / Constants.PPM, 30 / Constants.PPM);
@@ -175,5 +185,16 @@ public class Player extends Sprite {
         {
             definePlayer();
         }
+    }
+    public void setToDestroy()
+    {
+        setToDestroy = true;
+    }
+    public void destroy()
+    {
+        world.destroyBody(playerBody);
+        destroyed = true;
+        //stateTime = 0;
+        playerBody = null;
     }
 }

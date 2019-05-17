@@ -14,10 +14,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.facultate.licenta.Game;
+import com.facultate.licenta.conections.ConnectionHandler;
+import com.facultate.licenta.conections.LobbyEventHandler;
 import com.facultate.licenta.tools.Constants;
+
+import org.json.JSONException;
 
 public class LobbyScreen implements Screen {
     private com.facultate.licenta.Game myGame;
@@ -29,12 +34,31 @@ public class LobbyScreen implements Screen {
     private Viewport menuPort;
     private Stage stage;
     private Texture background;
-    private Texture background2;
+
+
+    public ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
+    }
+    private LobbyEventHandler lobbyEventHandler;
+    private LobbyScreen lobby;
+
+    public Array<String> getAllPlayers() {
+        return allPlayers;
+    }
+
+    private Array<String> allPlayers;
+    private ConnectionHandler connectionHandler;
+    private List<String> list;
+
+    private boolean readyStatus;
     public LobbyScreen(Game game)
     {
         myGame = game;
+        connectionHandler = new ConnectionHandler();
+        connectionHandler.connectSocket();
+        lobbyEventHandler = new LobbyEventHandler(connectionHandler,this);
+        allPlayers = new Array<String>();
         background = new Texture("bg.png");
-        background2 = new Texture("bg2.png");
         //camera pentru hud(controller)
         menuCamera = new OrthographicCamera();
         //hud-ul are nevoie de propriul viewport
@@ -42,9 +66,11 @@ public class LobbyScreen implements Screen {
         //setup stage, stage este si input listener.
         stage = new Stage(menuPort,myGame.batch);
         Gdx.input.setInputProcessor(stage);
-        //table e ca o masa intr=o camera(stage) pe care asezi etichete(lable)
 
+        readyStatus = false;
+        //table e ca o masa intr=o camera(stage) pe care asezi etichete(lable)
         menuCamera.position.set(Constants.WIDTH/2f, Constants.HEIGHT/2f, 0);
+        lobby = this;
         //creaza o imagine cu textura butonului
         Image back = new Image(new Texture("Back.png"));
         //scaleaza butonul
@@ -60,6 +86,7 @@ public class LobbyScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                connectionHandler.getSocket().disconnect();
                 myGame.setScreen(new MenuScreen(myGame));
                 super.touchUp(event, x, y, pointer, button);
             }
@@ -78,20 +105,24 @@ public class LobbyScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                myGame.setScreen(new PlayScreen(myGame));
+                readyStatus = true;
+                connectionHandler.getSocket().emit("ready",readyStatus);
+
+
+                //connectionHandler.getSocket().disconnect();
+                //myGame.setScreen(new PlayScreen(myGame,lobby));
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+        if (readyStatus) {
+            ready.setVisible(false);
+        }
         ScrollPane scrollPane;
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"),atlas);
-        List<String> list = new List<String>(uiSkin);
-        String[] strings = new String[4];
-        for (int i = 0, k = 0; i < 4; i++) {
-            strings[k++] = "Player: " + i;
+        list = new List<String>(uiSkin);
+        lobbyEventHandler.lobbyConfig();
 
-        }
-        list.setItems(strings);
         scrollPane = new ScrollPane(list);
         scrollPane.setBounds(0, 0, Constants.WIDTH, Constants.HEIGHT + 100);
         scrollPane.setSmoothScrolling(false);
@@ -116,6 +147,32 @@ public class LobbyScreen implements Screen {
     public void show() {
 
     }
+    public void update()
+    {
+        if(lobbyEventHandler.getPlayersFromServer()!=null) {
+            for (int i = 0; i < lobbyEventHandler.getPlayersFromServer().length(); i++) {
+                try {
+                    if(!allPlayers.contains(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("id"),true)) {
+                        allPlayers.add(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("id"));
+                    }
+                } catch (JSONException e) {
+                    Gdx.app.log("LOBBYSCREEN", "error updating ERROR");
+
+                }
+            }
+
+        }
+        list.clear();
+        list.setItems(allPlayers);
+        if(lobbyEventHandler.isReadyToStart())
+        {
+            connectionHandler.getSocket().disconnect();
+            myGame.setScreen(new PlayScreen(myGame,lobby));
+        }
+
+//        connectionHandler.getSocket().emit("getPlayers");
+//        connectionHandler.getSocket().emit("newPlayerConnected");
+    }
 
     @Override
     public void render(float delta) {
@@ -126,6 +183,7 @@ public class LobbyScreen implements Screen {
         myGame.batch.end();
         stage.draw();
         stage.act(delta);
+        update();
     }
 
     @Override

@@ -7,7 +7,7 @@ var allBullets = [];
 var timer = 0;
 var xVel = 0;
 var yVel= 0;
-
+var readyCounter = 0;
 server.listen(8081,function()
 {
     console.log("Server is up..");
@@ -16,6 +16,7 @@ server.listen(8081,function()
 io.on('connection',function(socket)
 {
     console.log("player connected");
+    allPlayers.push(new player(socket.id,0,0,0,0,false));//cand un jucator se conecteaza adauga-l in lista de jucatori
     socket.emit('socketId', {id: socket.id}); //serverul trimite catre socket-ul curent id0ul propriu
     socket.emit('getPlayers', allPlayers); //cand jucatorul se conecteaza primeste lista cu toti jucatorii deja conectati
     socket.emit('getSpiders', allSpiders);//cand jucatorul se conecteaza primeste lista cu toti paienjenii deja existenti.
@@ -66,10 +67,26 @@ io.on('connection',function(socket)
 //        io.sockets.emit('spidersDestroyed',allSpiders);
 //    });
     socket.on('updateBullets', function(data) //event primit de la socket
-            {
+    {
 //              allBullets.push(new bullet(data[i].x,data[i].y,data[i].xv,data[i].yv));
                 socket.broadcast.emit('updateBullets',{x:data.x,y:data.y,xv:data.xv,yv:data.yv});
-            });
+    });
+    socket.on('ready', function(data) //event primit de la socket
+        {
+            for(var i=0;i<allPlayers.length;i++) //itereaza printre toti jucatorii
+            {
+                if(allPlayers[i].id == socket.id) //daca jucatorul este  socket-ul curent
+                {
+                    allPlayers[i].ready = true;
+                    readyCounter ++;
+                }
+            }
+            if(readyCounter == allPlayers.length)
+            {
+                started = true
+                io.sockets.emit('start',{startBool: started});
+            }
+        });
     socket.on('disconnect',function()
     {
         socket.broadcast.emit('playerDisconnected',{id: socket.id});
@@ -81,10 +98,12 @@ io.on('connection',function(socket)
             if(allPlayers[i].id == socket.id)
             {
                 allPlayers.splice(i,1);
+                console.log(allPlayers);
             }
         }
     });
-    allPlayers.push(new player(socket.id,0,0,0,0));//cand un jucator se conecteaza adauga-l in lista de jucatori
+
+
 });
 //in fiecare secunda serverul caculeaza si trimite statusul timer-ului catre clienti.
 setInterval(function()
@@ -102,15 +121,16 @@ setInterval(function()
 setInterval(function()
 {
     io.sockets.emit('spidersStop',allSpiders);//SERVERUL trimite catre toti clientii.
-},111);
+},1111);
 
-function player(id,x,y,xv,yv) //obiectul jucator de pe server.
+function player(id,x,y,xv,yv,ready) //obiectul jucator de pe server.
 {
     this.id = id;
     this.x = x;
     this.y = y;
     this.xv = xv;
     this.yv = yv;
+    this.ready = ready
 }
 function spider (id,x,y,xv,yv,spawned,destroyed)
 {

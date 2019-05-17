@@ -2,7 +2,10 @@ package com.facultate.licenta.input;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.facultate.licenta.items.ItemDef;
+import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.objects.DefaultBullet;
+import com.facultate.licenta.screens.MenuScreen;
 import com.facultate.licenta.screens.PlayScreen;
 import com.facultate.licenta.tools.Constants;
 
@@ -29,11 +32,15 @@ public class InputHandler {
     {
         if (playScreen.getPlayer()!=null)
         {
+            //Gdx.app.log("POS", "x: "+ playScreen.getPlayer().playerBody.getPosition().x + " y:" +playScreen.getPlayer().playerBody.getPosition().y);
             if(playScreen.getController().isLeftPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x>= -playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
                     movementVector = new Vector2(-playScreen.getPlayer().getPlayerStats().getAccelerationRate(), 0f);
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
+                    //playScreen.getConnectionHandler().getSocket().disconnect();
+                    //playScreen.getMyGame().setScreen(new MenuScreen(playScreen.getMyGame()));
+
                 }
             }
             if(playScreen.getController().isRightPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x<=playScreen.getPlayer().getPlayerStats().getSpeed())
@@ -75,6 +82,7 @@ public class InputHandler {
                     bullet.bulletBody.applyLinearImpulse(shotVector,bullet.bulletBody.getWorldCenter(),true);
                     playScreen.getBullets().add(bullet);
                     playScreen.getUpdateServer().updateBullets(bullet);
+                    //playScreen.spawnItem(new ItemDef(new Vector2(playScreen.getPlayer().getX(),playScreen.getPlayer().getY()), LifeCrystal.class));
                 }
             }
         }

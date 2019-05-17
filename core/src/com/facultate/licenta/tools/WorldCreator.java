@@ -93,6 +93,10 @@ public class WorldCreator {
             Gdx.app.log("Spider", "From List");
             for (Spider spider: spiders) {
                 new Spider(playScreen,spider.getX(),spider.getY());
+                if(spider.enemyBody.getPosition().x<=0 && spider.enemyBody.getPosition().y<=0)
+                {
+                    spider.setSetToDestroy();
+                }
             }
         }
     }

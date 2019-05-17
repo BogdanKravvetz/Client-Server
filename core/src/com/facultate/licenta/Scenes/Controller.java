@@ -1,6 +1,7 @@
 package com.facultate.licenta.Scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,8 +29,49 @@ public class Controller {
         controllerCamera = new OrthographicCamera();
         //hud-ul are nevoie de propriul viewport
         viewport = new FitViewport(Constants.WIDTH,Constants.HEIGHT,controllerCamera);
+
         //setup stage, stage este si input listener.
         stage = new Stage(viewport,game.batch);
+        stage.addListener(new InputListener(){
+
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                switch(keycode){
+                    case Input.Keys.W:
+                        upPressed = true;
+                        break;
+                    case Input.Keys.S:
+                        downPressed = true;
+                        break;
+                    case Input.Keys.A:
+                        leftPressed = true;
+                        break;
+                    case Input.Keys.D:
+                        rightPressed = true;
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                switch(keycode){
+                    case Input.Keys.W:
+                        upPressed = false;
+                        break;
+                    case Input.Keys.S:
+                        downPressed = false;
+                        break;
+                    case Input.Keys.A:
+                        leftPressed = false;
+                        break;
+                    case Input.Keys.D:
+                        rightPressed = false;
+                        break;
+                }
+                return true;
+            }
+        });
         Gdx.input.setInputProcessor(stage);
         //table e ca o masa intr=o camera(stage) pe care asezi etichete(lable)
 
