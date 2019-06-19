@@ -24,10 +24,10 @@ public class DefaultBullet extends Bullet {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
         for (int i=0;i<1;i++)
-            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),i * 32, 0, 32, 32));
+            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),32*8, 0, 32, 32));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,32/ Constants.PPM,32/Constants.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,25/ Constants.PPM,25/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
 
@@ -36,22 +36,21 @@ public class DefaultBullet extends Bullet {
     @Override
     protected void defineBullet() {
         if(!playScreen.getWorld().isLocked()) {
+
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
             bodyDef.position.set(getX() / Constants.PPM, getY() / Constants.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             bulletBody = this.world.createBody(bodyDef);
-            //Gdx.app.log("Bullet",bulletBody.toString());
-            shape.setAsBox(10 / Constants.PPM, 10 / Constants.PPM);
-            //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
+            shape.setAsBox(12 / Constants.PPM, 12 / Constants.PPM);
+                                                                                                                //defineste categoria fixturii ca fiind bit de glont pentru coliziune selectiva.
             fixtureDef.filter.categoryBits = Constants.BULLET_BIT;
-            //biti cu care jucatorul poate avea coliziuni (MASCA)
+                                                                                                                //biti cu care corpul poate avea coliziuni (MASCA)
             fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.ENEMY_BIT;
             fixtureDef.shape = shape;
             fixtureDef.isSensor = true;
             bulletBody.createFixture(fixtureDef).setUserData(this);
-            //shape.dispose();
         }
         else
         {

@@ -29,6 +29,7 @@ public abstract class Enemy extends Sprite {
     protected abstract void defineEnemy();
     public abstract void update(float deltaTime);
     public abstract void onEnemyHit(Bullet bullet);
+    public abstract void hit(Player player);
 
     public void reverseVelocity(boolean x,boolean y)
     {

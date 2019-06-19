@@ -5,9 +5,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.facultate.licenta.items.ItemDef;
 import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.objects.DefaultBullet;
+import com.facultate.licenta.objects.Player;
 import com.facultate.licenta.screens.MenuScreen;
 import com.facultate.licenta.screens.PlayScreen;
 import com.facultate.licenta.tools.Constants;
+
+import org.json.JSONObject;
 
 public class InputHandler {
 
@@ -30,6 +33,10 @@ public class InputHandler {
 
     public void movementInput(float deltaTime)//delta time cat timp a trecut de la ultimul update
     {
+        if(playScreen.getSocketEvents().getIsGameOver())
+        {
+            return;
+        }
         if (playScreen.getPlayer()!=null)
         {
             //Gdx.app.log("POS", "x: "+ playScreen.getPlayer().playerBody.getPosition().x + " y:" +playScreen.getPlayer().playerBody.getPosition().y);
@@ -46,9 +53,14 @@ public class InputHandler {
             if(playScreen.getController().isRightPressed() && playScreen.getPlayer().playerBody.getLinearVelocity().x<=playScreen.getPlayer().getPlayerStats().getSpeed())
             {
                 if(!playScreen.getWorld().isLocked()) {
+
+
                     movementVector = new Vector2(playScreen.getPlayer().getPlayerStats().getAccelerationRate(), 0f);
                     playScreen.getPlayer().playerBody.applyLinearImpulse(movementVector, playScreen.getPlayer().playerBody.getWorldCenter(), true);
+
+
                 }
+
             }
             if(playScreen.getController().isDownPressed()&& playScreen.getPlayer().playerBody.getLinearVelocity().y >= -playScreen.getPlayer().getPlayerStats().getSpeed())
             {
@@ -83,6 +95,11 @@ public class InputHandler {
                     playScreen.getBullets().add(bullet);
                     playScreen.getUpdateServer().updateBullets(bullet);
                     //playScreen.spawnItem(new ItemDef(new Vector2(playScreen.getPlayer().getX(),playScreen.getPlayer().getY()), LifeCrystal.class));
+                    for(Player player :playScreen.getAllPlayers().values())
+                    {
+                        Gdx.app.log("input", "ID:" + player.getId());
+                    }
+
                 }
             }
         }

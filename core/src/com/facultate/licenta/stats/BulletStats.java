@@ -20,7 +20,7 @@ public class BulletStats {
     public BulletStats()
     {
         lifeSpan = 2;
-        speed = 20;
+        speed = 15;
         damage = 50;
     }
 

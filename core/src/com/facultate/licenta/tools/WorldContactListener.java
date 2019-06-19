@@ -5,9 +5,12 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.objects.Bullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.InteractiveTileObject;
+import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.objects.Spider;
 
 public class WorldContactListener implements ContactListener {
 
@@ -51,6 +54,25 @@ public class WorldContactListener implements ContactListener {
                 else if(fixB.getFilterData().categoryBits == Constants.BULLET_BIT)
                 {
                     ((Bullet)fixB.getUserData()).onHit();
+                }
+                break;
+            case  Constants.PLAYER_BIT | Constants.PICKUP_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.PICKUP_BIT) {
+                    ((LifeCrystal) fixA.getUserData()).use(((Player) fixB.getUserData()));
+                   // if(((Player) fixB.getUserData()).getId().equals())
+                }
+                else if(fixB.getFilterData().categoryBits == Constants.PICKUP_BIT)
+                {
+                    ((LifeCrystal) fixB.getUserData()).use(((Player) fixA.getUserData()));
+                }
+                break;
+            case Constants.PLAYER_BIT | Constants.ENEMY_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.ENEMY_BIT) {
+                    ((Enemy) fixA.getUserData()).hit(((Player) fixB.getUserData()));
+                }
+                else if(fixB.getFilterData().categoryBits == Constants.ENEMY_BIT)
+                {
+                    ((Enemy) fixB.getUserData()).hit(((Player) fixA.getUserData()));
                 }
                 break;
         }

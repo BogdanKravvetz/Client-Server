@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -33,7 +34,7 @@ public class MenuScreen implements Screen {
     public MenuScreen(Game game)
     {
         myGame = game;
-        background = new Texture("bg.png");
+        background = new Texture("bg3.png");
         //camera pentru hud(controller)
         menuCamera = new OrthographicCamera();
         //hud-ul are nevoie de propriul viewport
@@ -42,27 +43,29 @@ public class MenuScreen implements Screen {
         stage = new Stage(menuPort,myGame.batch);
         Gdx.input.setInputProcessor(stage);
         //table e ca o masa intr=o camera(stage) pe care asezi etichete(lable)
+        Image title =  new Image(new Texture("Title.png"));
+        Image name =  new Image(new Texture("Nume.png"));
 
         menuCamera.position.set(Constants.WIDTH/2f, Constants.HEIGHT/2f, 0);
         //creaza o imagine cu textura butonului
+
         Image play = new Image(new Texture("Play.png"));
-        //scaleaza butonul
+                                                                                                            //scaleaza butonul
         play.setSize(buttonWidth,buttonHeight);
-        //input events
+                                                                                                             //input events
         play.addListener(new InputListener()
         {
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true; //returneaza true pentru a intra in touch up
+                return true;                                                                            //returneaza true pentru a intra in touch up
             }
-
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 myGame.setScreen(new LobbyScreen(myGame));
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+
         Image exit = new Image(new Texture("Exit.png"));
         //scaleaza butonul
         exit.setSize(buttonWidth,buttonHeight);
@@ -81,13 +84,30 @@ public class MenuScreen implements Screen {
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+        TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
+        Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"),atlas);
+
+        Constants.name = new TextField("",uiSkin);
+        if(Constants.name.getText().equals(""))
+        {
+            Constants.name.setText("Jucator");
+        }
+
         Table table = new Table();
         table.setWidth(Constants.WIDTH);
         table.setHeight(Constants.HEIGHT);
-        table.center();//aliniaza
-        table.add(play).size(play.getWidth(),play.getHeight());
+        table.top().pad(40); //aliniaza
+        table.add(title).size(title.getWidth()/2,title.getHeight()/2);
+        //table.center();
+        table.row().pad(20,0,5,5);
+        table.add(name).size(name.getWidth()/4,name.getHeight()/4);
+        table.row().pad(20,0,5,5);
+        table.add(Constants.name);
         table.row().pad(5,5,5,5);
-        table.add(exit).size(exit.getWidth(),exit.getHeight());
+        table.add(play).size(play.getWidth()/2,play.getHeight()/2);
+        table.row().pad(5,5,5,5);
+        table.add(exit).size(exit.getWidth()/2,exit.getHeight()/2);
+
         table.row().pad(5,5,5,5);
         stage.addActor(table);
     }

@@ -49,14 +49,18 @@ public class UpdateObjects {
                 {
                     Player otherPlayer = new Player(playScreen);
                     Vector2 position = new Vector2();
+                    //trebuie si id
+                    String id = playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getString("id");
                     position.x = ((Double) playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getDouble("x")).floatValue();
                     position.y = ((Double) playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getDouble("y")).floatValue();
+                    otherPlayer.setId(id);
                     if (!playScreen.getWorld().isLocked())
                         otherPlayer.playerBody.setTransform(position, 0f);
                     playScreen.getAllPlayers().put(playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getString("id"), otherPlayer);//pune jucatorii in hash-map=ul local
+                    Gdx.app.log("UpdateObjects", "ID:" + id);
                 }
             } catch (JSONException e) {
-                Gdx.app.log("socketIO", "Error getting players from server");
+                Gdx.app.log("UpdateObjects", "Error getting players from server");
             }
         }
     }
@@ -104,6 +108,9 @@ public class UpdateObjects {
                     Double xVelocity = spider.getDouble("xv");
                     Double yVelocity = spider.getDouble("yv");
                     //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);
+                    if(playScreen.getWorldCreator().getSpiders().isEmpty()) {
+                        return;
+                    }
                     if (playScreen.getWorldCreator().getSpiders().get(i) != null && !playScreen.getWorld().isLocked()) {
                         if (playScreen.getWorldCreator().getSpiders().get(i).enemyBody != null) {
                             playScreen.getWorldCreator().getSpiders().get(i).enemyBody.setLinearVelocity(xVelocity.floatValue(), yVelocity.floatValue());
@@ -171,6 +178,7 @@ public class UpdateObjects {
             Gdx.app.log("socketIO", "Error stopping spiders");
         }
     }
+
     public void updateBullets() {
         try {
             if (playScreen.getSocketEvents().getBuletFromServer() != null) {
@@ -183,10 +191,10 @@ public class UpdateObjects {
                     DefaultBullet bullet = new DefaultBullet(playScreen,xPosition.floatValue(),yPosition.floatValue());
                     bullet.bulletBody.setLinearVelocity(xVelocity.floatValue(),yVelocity.floatValue());
                     playScreen.getBullets().add(bullet);
-                    playScreen.getSocketEvents().setBuletFromServer(null);//!!!!!
+                    playScreen.getSocketEvents().setBuletFromServer(null);                                                  //!!!!!
             }
         } catch (JSONException e) {
-            Gdx.app.log("socketIO", "Error updating spiders");
+            Gdx.app.log("socketIO", "Error updating bullets");
         }
     }
 }

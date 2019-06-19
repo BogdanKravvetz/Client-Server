@@ -1,5 +1,6 @@
 package com.facultate.licenta.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,6 +24,16 @@ public class Player extends Sprite {
     private Animation runRight;
     private float stateTimer;
     private boolean right;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    private String id;
 
     private World world ;
     public Body playerBody;
@@ -72,6 +83,7 @@ public class Player extends Sprite {
         playerStats = new PlayerStats();
         setToDestroy = false;
         destroyed = false;
+        id = playScreen.getConnectionHandler().getSocket().id();
     }
     public boolean hasMoved()
     {
@@ -100,7 +112,6 @@ public class Player extends Sprite {
     {
         currentState = getState();
         TextureRegion region ;
-        //sprite =
         switch (currentState)
         {
             case RUNNING_DOWN:
@@ -115,7 +126,6 @@ public class Player extends Sprite {
                 }
                 break;
             case RUNNING_LEFT:
-
                 region = (TextureRegion) runRight.getKeyFrame(stateTimer,true);
                 sprite = (TextureRegion) runRight.getKeyFrame(0);
                 sprite.flip(true,false);
@@ -132,7 +142,12 @@ public class Player extends Sprite {
                     region = sprite;
                 break;
         }
-//        if((playerBody.getLinearVelocity().x<0 || !right) && !region.isFlipX())
+        stateTimer = currentState==previousState ? stateTimer+dt :0;
+        previousState= currentState;
+        return region;
+    }
+
+    //        if((playerBody.getLinearVelocity().x<0 || !right) && !region.isFlipX())
 //        {
 //            region.flip(true,false);
 //            right=false;
@@ -142,10 +157,7 @@ public class Player extends Sprite {
 //            region.flip(true,false);
 //            right=true;
 //        }
-        stateTimer = currentState==previousState ? stateTimer+dt :0;
-        previousState= currentState;
-        return region;
-    }
+
     public State getState()
     {
         if (playerBody.getLinearVelocity().x == 0  && playerBody.getLinearVelocity().y ==0)
@@ -167,7 +179,7 @@ public class Player extends Sprite {
             BodyDef bodyDef = new BodyDef();
             PolygonShape shape = new PolygonShape();
             FixtureDef fixtureDef = new FixtureDef();
-            bodyDef.position.set(300 / Constants.PPM, 300 / Constants.PPM); //3350 , 2300
+            bodyDef.position.set(3350 / Constants.PPM, 2300 / Constants.PPM); //3350 , 2300
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             playerBody = this.world.createBody(bodyDef);
             shape.setAsBox(16 / Constants.PPM, 30 / Constants.PPM);
@@ -176,9 +188,9 @@ public class Player extends Sprite {
 
             //biti cu care jucatorul poate avea coliziuni
             //MASCA
-            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.PICKUP_BIT | Constants.ENEMY_BIT;
             fixtureDef.shape = shape;
-            playerBody.createFixture(fixtureDef).setUserData("player");
+            playerBody.createFixture(fixtureDef).setUserData(this);
             shape.dispose();
         }
         else
@@ -186,6 +198,7 @@ public class Player extends Sprite {
             definePlayer();
         }
     }
+
     public void setToDestroy()
     {
         setToDestroy = true;

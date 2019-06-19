@@ -35,6 +35,7 @@ import com.facultate.licenta.tools.WorldCreator;
 
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 public class PlayScreen implements Screen {
     public Game getMyGame() {
@@ -151,6 +152,15 @@ public class PlayScreen implements Screen {
         allPlayers = new HashMap<String, Player>();
         //connectionHandler = new ConnectionHandler();
         connectionHandler =  lobbyScreen.getConnectionHandler();
+        Random rdm =  new Random();
+        try {
+            Thread.sleep(rdm.nextInt(3000)+200);
+        }
+        catch (InterruptedException e)
+        {
+            System.out.print(e);
+        }
+
         connectionHandler.connectSocket();
         updateServer = new UpdateServer(this, connectionHandler);
         socketEvents = new SocketEventHandler(this, connectionHandler);
@@ -158,7 +168,6 @@ public class PlayScreen implements Screen {
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
         gamePort = new FitViewport(896 / Constants.PPM, 504 / Constants.PPM, gameCamera);
-        hud = new Hud(game.batch, this);
         controller = new Controller(myGame);
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level.tmx");
@@ -177,6 +186,8 @@ public class PlayScreen implements Screen {
         bullets = new Array<DefaultBullet>();
         items = new Array<Item>();
         itemsToSpawn = new PriorityQueue<ItemDef>();
+        hud = new Hud(game.batch, this);
+
     }
     public void spawnItem(ItemDef itemDef){
 
@@ -250,7 +261,7 @@ public class PlayScreen implements Screen {
         //randeaza mapa
         renderer.render();
         //randeaza liniile coliziunilor
-        debugRenderer.render(world, gameCamera.combined);
+        //debugRenderer.render(world, gameCamera.combined);
         myGame.batch.setProjectionMatrix(gameCamera.combined);
         myGame.batch.begin();
 

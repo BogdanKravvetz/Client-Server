@@ -2,19 +2,25 @@ package com.facultate.licenta.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.facultate.licenta.Game;
@@ -23,8 +29,13 @@ import com.facultate.licenta.conections.LobbyEventHandler;
 import com.facultate.licenta.tools.Constants;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LobbyScreen implements Screen {
+    public Game getMyGame() {
+        return myGame;
+    }
+
     private com.facultate.licenta.Game myGame;
 
     private int buttonWidth = 300;
@@ -51,6 +62,8 @@ public class LobbyScreen implements Screen {
     private List<String> list;
 
     private boolean readyStatus;
+    private  Image ready;
+    private Texture readyTexture;
     public LobbyScreen(Game game)
     {
         myGame = game;
@@ -58,7 +71,7 @@ public class LobbyScreen implements Screen {
         connectionHandler.connectSocket();
         lobbyEventHandler = new LobbyEventHandler(connectionHandler,this);
         allPlayers = new Array<String>();
-        background = new Texture("bg.png");
+        background = new Texture("bg3.png");
         //camera pentru hud(controller)
         menuCamera = new OrthographicCamera();
         //hud-ul are nevoie de propriul viewport
@@ -91,7 +104,8 @@ public class LobbyScreen implements Screen {
                 super.touchUp(event, x, y, pointer, button);
             }
         });
-        Image ready = new Image(new Texture("Ready.png"));
+        readyTexture = new Texture("Pregatit.png");
+        ready = new Image(new Texture("Ready.png"));
         //scaleaza butonul
         ready.setSize(buttonWidth,buttonHeight);
         //input events
@@ -105,11 +119,18 @@ public class LobbyScreen implements Screen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                readyStatus = true;
-                connectionHandler.getSocket().emit("ready",readyStatus);
+                if(!lobbyEventHandler.started) {
+                    readyStatus = true;
+                    connectionHandler.getSocket().emit("ready", readyStatus);
+                    Gdx.app.log("LOBBYSCREEN", "I'm ready");
+                } else{
+                    Gdx.app.log("LOBBYSCREEN", "change scene");
+                    connectionHandler.getSocket().disconnect();
+                    myGame.setScreen(new MenuScreen(myGame));
+                }
 
 
-                //connectionHandler.getSocket().disconnect();
+
                 //myGame.setScreen(new PlayScreen(myGame,lobby));
                 super.touchUp(event, x, y, pointer, button);
             }
@@ -130,17 +151,24 @@ public class LobbyScreen implements Screen {
                 Constants.HEIGHT / 2f - scrollPane.getHeight() / 4*/);
         scrollPane.setTransform(true);
         scrollPane.setScale(1f);
-
+        Label titlu = new Label("Camera de Asteptare",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        titlu.setFontScale(2);
         Table table = new Table();
         table.setWidth(Constants.WIDTH);
         table.setHeight(Constants.HEIGHT);
-        table.center();//aliniaza
-        table.add(scrollPane).size(400,300);
-        table.add(back).size(back.getWidth(),back.getHeight());
-        table.row().pad(5,5,5,5);
-        table.add();
+        table.top();//aliniaza
+        table.padTop(20);
+        table.add(titlu).expandX();
+        table.row().pad(20,5,5,5);
+        table.add(scrollPane).size(400,300).expandX();
+
+        table.row().pad(20,5,5,5);
+        //table.add();
         table.add(ready).size(ready.getWidth(),ready.getHeight());
+        table.row().pad(5,5,5,5);
+        table.add(back).size(back.getWidth(),back.getHeight());
         stage.addActor(table);
+
     }
 
     @Override
@@ -149,29 +177,39 @@ public class LobbyScreen implements Screen {
     }
     public void update()
     {
-        if(lobbyEventHandler.getPlayersFromServer()!=null) {
-            for (int i = 0; i < lobbyEventHandler.getPlayersFromServer().length(); i++) {
-                try {
-                    if(!allPlayers.contains(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("id"),true)) {
-                        allPlayers.add(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("id"));
+        if(allPlayers.isEmpty()) {
+            if (lobbyEventHandler.getPlayersFromServer() != null) {
+                for (int i = 0; i < lobbyEventHandler.getPlayersFromServer().length(); i++) {
+                    try {
+                        if (!allPlayers.contains(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("name"), true)) {
+                            allPlayers.add(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("name"));
+                        }
+                    } catch (JSONException e) {
+                        Gdx.app.log("LOBBYSCREEN", "error list update");
                     }
-                } catch (JSONException e) {
-                    Gdx.app.log("LOBBYSCREEN", "error updating ERROR");
-
+                }
+                if (!allPlayers.contains(Constants.name.getText(),false))
+                {
+                    allPlayers.add(Constants.name.getText());
                 }
             }
-
         }
+
+
         list.clear();
         list.setItems(allPlayers);
+
+        if(readyStatus)
+        {
+            ready.setDrawable(new SpriteDrawable(new Sprite(readyTexture)));
+        }
+
         if(lobbyEventHandler.isReadyToStart())
         {
             connectionHandler.getSocket().disconnect();
             myGame.setScreen(new PlayScreen(myGame,lobby));
         }
 
-//        connectionHandler.getSocket().emit("getPlayers");
-//        connectionHandler.getSocket().emit("newPlayerConnected");
     }
 
     @Override

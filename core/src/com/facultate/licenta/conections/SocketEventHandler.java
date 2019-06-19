@@ -3,7 +3,9 @@ package com.facultate.licenta.conections;
 import com.badlogic.gdx.Gdx;
 import com.facultate.licenta.objects.Player;
 
+import com.facultate.licenta.screens.MenuScreen;
 import com.facultate.licenta.screens.PlayScreen;
+import com.facultate.licenta.tools.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,6 +22,12 @@ public class SocketEventHandler {
     private JSONObject otherPlayerMovedData;
     private JSONArray playersFromServer;
     private JSONArray getSpidersFromServer;
+
+    public boolean getIsGameOver() {
+        return isGameOver;
+    }
+
+    private  boolean isGameOver;
 
 
     private JSONObject buletFromServer;
@@ -56,6 +64,7 @@ public class SocketEventHandler {
     {
         this.playScreen = playScreen;
         this.connectionHandler = connectionHandler;
+        isGameOver = false;
     }
 
 
@@ -70,6 +79,16 @@ public class SocketEventHandler {
             {
                 Gdx.app.log("socketIO","Connected");
                 playScreen.setPlayer(new Player(playScreen));
+//                JSONObject data = new JSONObject();
+//                try {
+//                    data.put("name", Constants.name.getText());
+//                    connectionHandler.getSocket().emit("myName",data);
+//                }
+//                catch (JSONException e)
+//                {
+//                    Gdx.app.log("event hadler", "nameError");
+//                }
+
             }
             //face rost de id-ul socket-ului (clientului) curent
         }).on("socketId", new Emitter.Listener() {
@@ -83,6 +102,7 @@ public class SocketEventHandler {
                 catch (JSONException e)
                 {
                     Gdx.app.log("socketIO", "Errorgetting user id");
+
                 }
 
             }
@@ -91,20 +111,24 @@ public class SocketEventHandler {
         }).on("newPlayerConnected", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                JSONObject data = (JSONObject) objects[0];//ia obiectul json din argumentele eventului de pe server
+                JSONObject data = (JSONObject) objects[0];                                          //ia obiectul json din argumentele eventului de pe server
                 try {
-                    String playerId = data.getString("id"); //ia proprietatea id al obiectului json
+                    String playerId = data.getString("id");                                         //ia proprietatea id al obiectului json
                     Gdx.app.log("socketIO","New Player Connected: "+ playerId);
-                    playScreen.getAllPlayers().put(playerId,new Player(playScreen));
+                    Player newPlayer  = new Player(playScreen);
+                    newPlayer.setId(playerId);
+                    playScreen.getAllPlayers().put(playerId,newPlayer);
                 }
                 catch (JSONException e)
                 {
-                    Gdx.app.log("socketIO", "Errorgetting New Player id");
+                    Gdx.app.log("socketIO", "Error getting New Player id");
                 }
             }
         }).on("getPlayers", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
+                playersFromServer = null;
+                playScreen.getAllPlayers().values().removeAll(playScreen.getAllPlayers().values());
                 playersFromServer = (JSONArray) objects[0];//ia lista de jucatori de pe server
 
             }
@@ -153,6 +177,7 @@ public class SocketEventHandler {
             public void call(Object... objects) {
                 buletFromServer = (JSONObject) objects[0];
             }
+
         }).on("spidersDestroyed", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
@@ -161,6 +186,37 @@ public class SocketEventHandler {
         }).on("start", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
+
+            }
+        }).on("gameOver", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+               JSONObject data = (JSONObject)objects[0];
+               try {
+                   isGameOver = data.getBoolean("gameOver");
+               }
+               catch (JSONException e)
+               {
+                   Gdx.app.log("socketIO", "game over Error!");
+               }
+
+            }
+        }).on("gainHp", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONObject data = (JSONObject) objects[0];
+                try {
+                    String id = data.getString("id");
+                    Integer hp = data.getInt("hp");
+                    if(playScreen.getConnectionHandler().getSocket().id().equals(id))
+                    {
+                        playScreen.getPlayer().getPlayerStats().setCurrentHp(hp);
+                    }
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("socketIO", "Error getting hp");
+                }
 
             }
         });
@@ -176,8 +232,10 @@ public class SocketEventHandler {
                 try {
                     String id = data.getString("id");
                     Gdx.app.log("socketIO","Player with id: "+ id+" disconnected");
-                    playScreen.getAllPlayers().get(id).setToDestroy();
-                    playScreen.getAllPlayers().remove(id);
+                    if(playScreen.getAllPlayers()!=null && id != null && playScreen.getAllPlayers().get(id)!=null ) {
+                        playScreen.getAllPlayers().get(id).setToDestroy();
+                        playScreen.getAllPlayers().remove(id);
+                    }
                 }
                 catch (JSONException e)
                 {

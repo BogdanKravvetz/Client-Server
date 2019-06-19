@@ -36,11 +36,11 @@ public class Spider extends Enemy {
     public Spider(PlayScreen playScreen, float x, float y) {
         super(playScreen, x, y);
         frames = new Array<TextureRegion>();
-        for (int i=0;i<4;i++)
-            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),i * 90, 0, 90, 80));
+        for (int i=0;i<1;i++)
+            frames.add(new TextureRegion(playScreen.getAtlas().findRegion("Character"),32*6, 0, 32, 32));
         walk = new Animation(0.4f,frames);
         stateTime =0;
-        setBounds(x,y,90/Constants.PPM,80/Constants.PPM);//pentru a stii cat de mare e sprite-ul
+        setBounds(x,y,40/Constants.PPM,40/Constants.PPM);//pentru a stii cat de mare e sprite-ul
         setToDestroy = false;
         destroyed = false;
         spiderId = UUID.randomUUID().toString();
@@ -69,11 +69,11 @@ public class Spider extends Enemy {
             bodyDef.position.set(getX() / Constants.PPM, getY() / Constants.PPM);
             bodyDef.type = BodyDef.BodyType.DynamicBody;
             enemyBody = this.world.createBody(bodyDef);
-            shape.setAsBox(30 / Constants.PPM, 30 / Constants.PPM);
+            shape.setAsBox(20 / Constants.PPM, 20 / Constants.PPM);
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
             fixtureDef.filter.categoryBits = Constants.ENEMY_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
-            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.BULLET_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.BULLET_BIT | Constants.ENEMY_BIT | Constants.PICKUP_BIT;
             fixtureDef.shape = shape;
             enemyBody.createFixture(fixtureDef).setUserData(this);
             //shape.dispose();
@@ -102,6 +102,21 @@ public class Spider extends Enemy {
             setToDestroy = true;
         }
     }
+
+    @Override
+    public void hit(Player player) {
+        if (player.getId().equals(playScreen.getConnectionHandler().getSocket().id()))
+        {
+            playScreen.getPlayer().getPlayerStats().setCurrentHp(playScreen.getPlayer().getPlayerStats().getCurrentHp()-60);
+            if(playScreen.getPlayer().getPlayerStats().getCurrentHp()<0)
+            {
+                playScreen.getPlayer().getPlayerStats().setCurrentHp(0);
+            }
+            Gdx.app.log("Player", "current HP" + playScreen.getPlayer().getPlayerStats().getCurrentHp());
+        }
+        setSetToDestroy();
+    }
+
     public void setSetToDestroy()
     {
         setToDestroy = true;

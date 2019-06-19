@@ -97,19 +97,21 @@ public class UpdateServer {
     public void updateBullets( DefaultBullet bullet)
     {
         if(timer>=UPDATE_TIME) {
+
             JSONObject data = new JSONObject();
             try {
-                    if(bullet.bulletBody!=null) {
-                        data.put("x", bullet.bulletBody.getPosition().x);
-                        data.put("y", bullet.bulletBody.getPosition().y);
-                        data.put("xv", bullet.bulletBody.getLinearVelocity().x);
-                        data.put("yv", bullet.bulletBody.getLinearVelocity().y);
-                    }
-                connectionHandler.getSocket().emit("updateBullets", data);//trimite event catre server.
-                //timer = 0;
+                if(bullet.bulletBody!=null) {
+                    data.put("x", bullet.bulletBody.getPosition().x);
+                    data.put("y", bullet.bulletBody.getPosition().y);
+                    data.put("xv", bullet.bulletBody.getLinearVelocity().x);
+                    data.put("yv", bullet.bulletBody.getLinearVelocity().y);
+                }
+                connectionHandler.getSocket().emit("updateBullets", data);                      //trimite event catre server.
+                                                                                                        //timer = 0;
             } catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data for bullets");
             }
         }
+
     }
 }
