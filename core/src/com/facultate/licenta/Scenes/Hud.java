@@ -35,6 +35,8 @@ public class Hud implements Disposable {
     private Label speedLabel;
     private Label endGameLabel;
     private Label fireRateLabel;
+
+    private Label winnerLabel;
     private Image menu;
 
     public Hud(SpriteBatch spriteBatch, PlayScreen playScreen)
@@ -62,13 +64,14 @@ public class Hud implements Disposable {
             }
         });
 
-        healthLabel = new Label("Viata: " + playScreen.getPlayer().getPlayerStats().getCurrentHp()+"/" + playScreen.getPlayer().getPlayerStats().getMaxHp(),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-        speedLabel = new Label("Viteza: " + playScreen.getPlayer().getPlayerStats().getSpeed()+"           ",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        healthLabel = new Label("Viata: " + (int)playScreen.getPlayer().getPlayerStats().getCurrentHp()+"/" + (int)playScreen.getPlayer().getPlayerStats().getMaxHp()+"      ",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        speedLabel = new Label("Scor: " + playScreen.getSocketEvents().getScore()+"              ",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         endGameLabel = new Label("Jocul s-a terminat!",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         endGameLabel.setFontScale(2);
         timeLabel = new Label("Timp",new Label.LabelStyle(new BitmapFont(), Color.WHITE));
         inGameTimerLabel = new Label(String.format(Locale.US,"%02d:%02d", (int)playScreen.getInGameTimer() / 60, (int)playScreen.getInGameTimer() % 60),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
-
+        winnerLabel =  new Label("Castigator: " + playScreen.getSocketEvents().getWinnerName(),new Label.LabelStyle(new BitmapFont(), Color.WHITE));
+        winnerLabel.setFontScale(2);
         Table table = new Table();
         table.setFillParent(true);
         table.setWidth(Constants.WIDTH);
@@ -85,13 +88,16 @@ public class Hud implements Disposable {
         table.row().padTop(150);
         table.add();
         table.add(endGameLabel);
-        //table.add();
+        table.row();
+        table.add();
+        table.add(winnerLabel);
         table.row();
         table.add();
         table.add(menu).size(100,50);
         //table.add();
         menu.setVisible(false);
         endGameLabel.setVisible(false);
+        winnerLabel.setVisible(false);
         timeLabel.setFontScale(2);
         inGameTimerLabel.setFontScale(2);
         healthLabel.setFontScale(2);
@@ -101,13 +107,15 @@ public class Hud implements Disposable {
     public void update(float dt)
     {
         inGameTimerLabel.setText(String.format(Locale.US,"%02d:%02d", (int)thisPlayScreen.getInGameTimer() / 60, (int)thisPlayScreen.getInGameTimer() % 60));
-        healthLabel.setText("Viata: " + thisPlayScreen.getPlayer().getPlayerStats().getCurrentHp()+"/" + thisPlayScreen.getPlayer().getPlayerStats().getMaxHp());
-        speedLabel.setText("Viteza: " + thisPlayScreen.getPlayer().getPlayerStats().getSpeed()+"           ");
+        healthLabel.setText("Viata: " + (int)thisPlayScreen.getPlayer().getPlayerStats().getCurrentHp()+"/" + (int)thisPlayScreen.getPlayer().getPlayerStats().getMaxHp()+"      ");
+        speedLabel.setText("Scor: " + thisPlayScreen.getSocketEvents().getScore()+"              ");
+        winnerLabel.setText("Castigator: " + thisPlayScreen.getSocketEvents().getWinnerName());
         if (thisPlayScreen.getSocketEvents().getIsGameOver())
         {
             Gdx.input.setInputProcessor(stage);
             menu.setVisible(true);
             endGameLabel.setVisible(true);
+            winnerLabel.setVisible(true);
         }
     }
 

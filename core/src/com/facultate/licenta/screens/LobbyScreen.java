@@ -168,6 +168,18 @@ public class LobbyScreen implements Screen {
         table.row().pad(5,5,5,5);
         table.add(back).size(back.getWidth(),back.getHeight());
         stage.addActor(table);
+        if(lobbyEventHandler.getPlayersFromServer() == null)
+        {
+            JSONObject data = new JSONObject();
+            try {
+                data.put("name", Constants.name.getText());
+                connectionHandler.getSocket().emit("givePlayers",data);
+            }
+            catch (JSONException e)
+            {
+                Gdx.app.log("lobbyScreen", "nameError");
+            }
+        }
 
     }
 
@@ -179,10 +191,13 @@ public class LobbyScreen implements Screen {
     {
         if(allPlayers.isEmpty()) {
             if (lobbyEventHandler.getPlayersFromServer() != null) {
+                Gdx.app.log("LOBBYSCREEN", "Test2");
                 for (int i = 0; i < lobbyEventHandler.getPlayersFromServer().length(); i++) {
+                    Gdx.app.log("LOBBYSCREEN", "Test FOR");
                     try {
                         if (!allPlayers.contains(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("name"), true)) {
                             allPlayers.add(lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("name"));
+                            Gdx.app.log("LOBBYSCREEN", "PLAYER - " + lobbyEventHandler.getPlayersFromServer().getJSONObject(i).getString("name"));
                         }
                     } catch (JSONException e) {
                         Gdx.app.log("LOBBYSCREEN", "error list update");

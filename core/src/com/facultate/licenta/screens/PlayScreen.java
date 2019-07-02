@@ -28,6 +28,7 @@ import com.facultate.licenta.items.LifeCrystal;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Enemy;
 import com.facultate.licenta.objects.Player;
+import com.facultate.licenta.objects.VenomBullet;
 import com.facultate.licenta.tools.Constants;
 import com.facultate.licenta.tools.UpdateObjects;
 import com.facultate.licenta.tools.WorldContactListener;
@@ -54,6 +55,12 @@ public class PlayScreen implements Screen {
     private InputHandler inputHandler;
     private UpdateObjects updateObjects;
     private Array<DefaultBullet> bullets;
+
+    public Array<VenomBullet> getEnemyBullets() {
+        return enemyBullets;
+    }
+
+    private Array<VenomBullet> enemyBullets;
     //camera jocului
     private OrthographicCamera gameCamera;
     private Viewport gamePort;
@@ -165,6 +172,9 @@ public class PlayScreen implements Screen {
         updateServer = new UpdateServer(this, connectionHandler);
         socketEvents = new SocketEventHandler(this, connectionHandler);
         socketEvents.configSocketEvents();
+
+        //
+        player = new Player(this);
         inputHandler = new InputHandler(this);
         gameCamera = new OrthographicCamera();
         gamePort = new FitViewport(896 / Constants.PPM, 504 / Constants.PPM, gameCamera);
@@ -184,6 +194,7 @@ public class PlayScreen implements Screen {
         worldCreator = new WorldCreator(this);
         updateObjects = new UpdateObjects(this);
         bullets = new Array<DefaultBullet>();
+        enemyBullets = new Array<VenomBullet>();
         items = new Array<Item>();
         itemsToSpawn = new PriorityQueue<ItemDef>();
         hud = new Hud(game.batch, this);
@@ -220,11 +231,12 @@ public class PlayScreen implements Screen {
         if (allPlayers.isEmpty()) {
             updateObjects.getOtherPlayers();
         }
-        updateServer.updatePlayerPosition(delta);
-        updateServer.updateSpiders(delta);
+        updateServer.updatePlayerPosition(Gdx.graphics.getDeltaTime());
+        updateServer.updateSpiders(Gdx.graphics.getDeltaTime());
         updateObjects.moveOtherPlayers();
         updateObjects.moveSpiders();
         updateObjects.updateBullets();
+        updateObjects.enemyShoot();
         handleSpawningItems();
         if ((int) timer == 5) {
             updateObjects.stopSpiders();//nu se vor opri pentru ca move e apelat fiecare frame. dar tot se executa asta.
@@ -237,6 +249,9 @@ public class PlayScreen implements Screen {
             player.update(delta);
         }
         for (DefaultBullet bullet : bullets) {
+            bullet.update(delta);
+        }
+        for (VenomBullet bullet : enemyBullets) {
             bullet.update(delta);
         }
         for (Enemy enemy : worldCreator.getSpiders()) {
@@ -281,6 +296,9 @@ public class PlayScreen implements Screen {
             item.draw(myGame.batch);
         }
         for (DefaultBullet bullet : bullets) {
+            bullet.draw(myGame.batch);
+        }
+        for (VenomBullet bullet : enemyBullets) {
             bullet.draw(myGame.batch);
         }
 

@@ -24,8 +24,8 @@ public class MenuScreen implements Screen {
 
     private Game myGame;
 
-    private int buttonWidth = 900;
-    private int buttonHeight = 300;
+    private int buttonWidth = 800;
+    private int buttonHeight = 250;
 
     private OrthographicCamera menuCamera;
     private Viewport menuPort;
@@ -84,6 +84,23 @@ public class MenuScreen implements Screen {
                 super.touchUp(event, x, y, pointer, button);
             }
         });
+        Image rules = new Image(new Texture("Reguli.png"));
+        //scaleaza butonul
+        rules.setSize(buttonWidth,buttonHeight);
+        //input events
+        rules.addListener(new InputListener()
+        {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true; //returneaza true pentru a intra in touch up
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                myGame.setScreen(new RulesScreen(myGame));
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
         TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("uiskin.atlas"));
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"),atlas);
 
@@ -105,6 +122,8 @@ public class MenuScreen implements Screen {
         table.add(Constants.name);
         table.row().pad(5,5,5,5);
         table.add(play).size(play.getWidth()/2,play.getHeight()/2);
+        table.row().pad(5,5,5,5);
+        table.add(rules).size(play.getWidth()/2,play.getHeight()/2);
         table.row().pad(5,5,5,5);
         table.add(exit).size(exit.getWidth()/2,exit.getHeight()/2);
 

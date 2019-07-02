@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.facultate.licenta.objects.DefaultBullet;
 import com.facultate.licenta.objects.Player;
 import com.facultate.licenta.objects.Spider;
+import com.facultate.licenta.objects.VenomBullet;
 import com.facultate.licenta.screens.PlayScreen;
 
 import org.json.JSONException;
@@ -57,7 +58,7 @@ public class UpdateObjects {
                     if (!playScreen.getWorld().isLocked())
                         otherPlayer.playerBody.setTransform(position, 0f);
                     playScreen.getAllPlayers().put(playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getString("id"), otherPlayer);//pune jucatorii in hash-map=ul local
-                    Gdx.app.log("UpdateObjects", "ID:" + id);
+                    //Gdx.app.log("UpdateObjects", "ID:" + id);
                 }
             } catch (JSONException e) {
                 Gdx.app.log("UpdateObjects", "Error getting players from server");
@@ -187,14 +188,41 @@ public class UpdateObjects {
                     Double yPosition = jbullet.getDouble("y") * Constants.PPM;
                     Double xVelocity = jbullet.getDouble("xv");
                     Double yVelocity = jbullet.getDouble("yv");
+                    String playerId = jbullet.getString("playerId");
                     //Gdx.app.log("socketIO", "xv" + xVelocity + "yv" + yVelocity);
-                    DefaultBullet bullet = new DefaultBullet(playScreen,xPosition.floatValue(),yPosition.floatValue());
+                    DefaultBullet bullet = new DefaultBullet(playScreen,xPosition.floatValue(),yPosition.floatValue(),playerId);
                     bullet.bulletBody.setLinearVelocity(xVelocity.floatValue(),yVelocity.floatValue());
                     playScreen.getBullets().add(bullet);
                     playScreen.getSocketEvents().setBuletFromServer(null);                                                  //!!!!!
             }
         } catch (JSONException e) {
             Gdx.app.log("socketIO", "Error updating bullets");
+        }
+    }
+    public void enemyShoot(){
+        try {
+            if(playScreen.getSocketEvents().getEnemyBullets()!=null) {
+                if(playScreen.getSocketEvents().bulletSpawned == false) {
+                    //Gdx.app.log("UpdateObject", "SIZE= "+ playScreen.getEnemyBullets().size);
+                    for(int i=0;i<playScreen.getSocketEvents().getEnemyBullets().length();i++) {
+                        JSONObject bullet = (JSONObject) playScreen.getSocketEvents().getEnemyBullets().get(i);
+                        Double enemyX = bullet.getDouble("x");
+                        Double enemyY = bullet.getDouble("y");
+                        Double velX = bullet.getDouble("xv");
+                        Double velY = bullet.getDouble("yv");
+                        VenomBullet enemyBullet = new VenomBullet(playScreen, enemyX.floatValue(), enemyY.floatValue(), "0");
+                        Vector2 shotVector = new Vector2(velX.floatValue() * 200, velY.floatValue() * 200);
+                        enemyBullet.bulletBody.applyForce(shotVector, enemyBullet.bulletBody.getWorldCenter(), true);
+                        playScreen.getEnemyBullets().add(enemyBullet);
+                        //Gdx.app.log("UpdateObject", "AM TRAS");
+                    }
+                    playScreen.getSocketEvents().bulletSpawned = true;
+                }
+            }
+        }
+        catch (JSONException e)
+        {
+            Gdx.app.log("LobbyEvent", "Score error");
         }
     }
 }

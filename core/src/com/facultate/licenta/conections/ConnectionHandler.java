@@ -50,8 +50,12 @@ public class ConnectionHandler {
             System.out.println(u);
         }
         try {
-            //socket = IO.socket("http://192.168.0.94:8081");
-            socket = IO.socket("http://"+ip+":8081");
+            IO.Options opts = new IO.Options();
+            opts.forceNew = false;
+            opts.reconnection = false;
+            socket = IO.socket("http://192.168.0.94:8081",opts);
+            //socket = IO.socket("http://"+ip+":8081");
+
             socket.connect();
         }
         catch (Exception e) {

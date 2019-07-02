@@ -83,7 +83,8 @@ public class Player extends Sprite {
         playerStats = new PlayerStats();
         setToDestroy = false;
         destroyed = false;
-        id = playScreen.getConnectionHandler().getSocket().id();
+        id = playScreen.getSocketEvents().getMyId();
+        //Gdx.app.log("PLAYER", "MY PLAYER ID IS: "+ id);
     }
     public boolean hasMoved()
     {
@@ -98,12 +99,21 @@ public class Player extends Sprite {
         return false;
     }
     public void update(float deltaTime) {
+        if(id ==null)
+        {
+            id = playScreen.getSocketEvents().getMyId();
+        }
 
         if(setToDestroy && !destroyed) {
             destroy();
         }
         if(!destroyed) {
             //updateaza pozitia sprite=ului in functie de pozisia corpului fizic
+            if(playerStats.getCurrentHp() <=0)
+            {
+                playerStats.setCurrentHp(50);
+                playerBody.setTransform(3350/Constants.PPM,2300/Constants.PPM,0);
+            }
             setPosition(playerBody.getPosition().x - getWidth() / 2, playerBody.getPosition().y - getHeight() / 2);
             setRegion(getFrame(deltaTime));
         }
@@ -188,7 +198,7 @@ public class Player extends Sprite {
 
             //biti cu care jucatorul poate avea coliziuni
             //MASCA
-            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.PICKUP_BIT | Constants.ENEMY_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.PICKUP_BIT | Constants.ENEMY_BIT | Constants.ENEMY_BULLET_BIT;
             fixtureDef.shape = shape;
             playerBody.createFixture(fixtureDef).setUserData(this);
             shape.dispose();
@@ -198,7 +208,19 @@ public class Player extends Sprite {
             definePlayer();
         }
     }
-
+    public void hit(Player player){
+//        Gdx.app.log("PLAYER", "COLIDED PLAYER ID IS: "+ player.getId());
+//        Gdx.app.log("PLAYER", "COLIDED PLAYER ID FROM SOCKET IS: "+ playScreen.getConnectionHandler().getSocket().id());
+        if(player.getId()!=null) {
+            if (player.getId().equals(playScreen.getConnectionHandler().getSocket().id())) {
+                playScreen.getPlayer().getPlayerStats().setCurrentHp(playScreen.getPlayer().getPlayerStats().getCurrentHp() - 10);
+                if (playScreen.getPlayer().getPlayerStats().getCurrentHp() < 0) {
+                    playScreen.getPlayer().getPlayerStats().setCurrentHp(0);
+                }
+                //Gdx.app.log("Player", "current HP" + playScreen.getPlayer().getPlayerStats().getCurrentHp());
+            }
+        }
+    }
     public void setToDestroy()
     {
         setToDestroy = true;

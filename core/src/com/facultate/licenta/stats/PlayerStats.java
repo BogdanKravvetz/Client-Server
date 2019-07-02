@@ -36,7 +36,7 @@ public class PlayerStats {
     public PlayerStats()
     {
         maxHp = 100;
-        currentHp = 70;
+        currentHp = 100;
         speed = 3;
         fireRate = 5;
         accelerationRate = 1;

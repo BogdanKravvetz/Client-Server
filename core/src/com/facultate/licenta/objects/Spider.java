@@ -15,6 +15,9 @@ import com.facultate.licenta.screens.PlayScreen;
 import com.facultate.licenta.stats.EnemyStats;
 import com.facultate.licenta.tools.Constants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.UUID;
 
 public class Spider extends Enemy {
@@ -73,7 +76,7 @@ public class Spider extends Enemy {
             //defineste categoria fixturii ca fiind bit de jucator pentru coliziune selectiva.
             fixtureDef.filter.categoryBits = Constants.ENEMY_BIT;
             //biti cu care jucatorul poate avea coliziuni (MASCA)
-            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.BULLET_BIT | Constants.ENEMY_BIT | Constants.PICKUP_BIT;
+            fixtureDef.filter.maskBits = Constants.DEFAULT_BIT | Constants.OBJECT_BIT | Constants.BULLET_BIT | Constants.ENEMY_BIT | Constants.PLAYER_BIT;
             fixtureDef.shape = shape;
             enemyBody.createFixture(fixtureDef).setUserData(this);
             //shape.dispose();
@@ -93,26 +96,53 @@ public class Spider extends Enemy {
     }
 
     @Override
-    public void onEnemyHit(Bullet bullet) {
+    public void onEnemyHit(Bullet bullet, Player player) {
         enemyStats.setCurrentHp(enemyStats.getCurrentHp()-bullet.getBulletStats().getDamage());
-        Gdx.app.log("SPIDER",enemyStats.getCurrentHp()+" HP");
+        //Gdx.app.log("SPIDER",enemyStats.getCurrentHp()+" HP");
         if(enemyStats.getCurrentHp() <= 0f) {
-            Gdx.app.log("SPIDER"," Crystal");
+            ///Gdx.app.log("SPIDER"," Crystal");
             playScreen.spawnItem(new ItemDef(new Vector2(enemyBody.getPosition().x, enemyBody.getPosition().y), LifeCrystal.class));
             setToDestroy = true;
+            if(bullet.getPlayerId().equals(playScreen.getConnectionHandler().getSocket().id()))
+            {
+                try{
+                    JSONObject data = new JSONObject();
+                    data.put("id",playScreen.getConnectionHandler().getSocket().id());
+                    playScreen.getConnectionHandler().getSocket().emit("scoreUp",data);
+                    //Gdx.app.log("Spider", "Score sent");
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("Spider", "Error on score!");
+                }
+
+            }
         }
+
     }
 
     @Override
     public void hit(Player player) {
+//        Gdx.app.log("SPIDER", "COLIDED PLAYER ID IS: "+ player.getId());
+//        Gdx.app.log("SPIDER", "COLIDED PLAYER ID FORM SOCKET IS: "+ playScreen.getConnectionHandler().getSocket().id());
         if (player.getId().equals(playScreen.getConnectionHandler().getSocket().id()))
         {
             playScreen.getPlayer().getPlayerStats().setCurrentHp(playScreen.getPlayer().getPlayerStats().getCurrentHp()-60);
+            try{
+                JSONObject data = new JSONObject();
+                data.put("id",playScreen.getConnectionHandler().getSocket().id());
+                playScreen.getConnectionHandler().getSocket().emit("scoreUp",data);
+                //Gdx.app.log("Spider", "Score sent");
+            }
+            catch (JSONException e)
+            {
+                Gdx.app.log("Spider", "Error on score!");
+            }
             if(playScreen.getPlayer().getPlayerStats().getCurrentHp()<0)
             {
                 playScreen.getPlayer().getPlayerStats().setCurrentHp(0);
             }
-            Gdx.app.log("Player", "current HP" + playScreen.getPlayer().getPlayerStats().getCurrentHp());
+            //Gdx.app.log("Player", "current HP" + playScreen.getPlayer().getPlayerStats().getCurrentHp());
         }
         setSetToDestroy();
     }

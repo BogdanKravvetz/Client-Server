@@ -16,6 +16,8 @@ public class UpdateServer {
     private final float UPDATE_RATE = 60;
     private final float UPDATE_TIME = 1/UPDATE_RATE;
     private float timer;
+    private float timer2;
+    private float timer3;
     public UpdateServer (PlayScreen playScreen,ConnectionHandler connectionHandler)
     {
         this.playScreen=playScreen;
@@ -53,6 +55,7 @@ public class UpdateServer {
                 data.put("xv",0);
                 data.put("yv",0);
                 connectionHandler.getSocket().emit("playerMoved", data);//trimite event catre server.
+                timer=0;
             }
             catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data");
@@ -61,7 +64,8 @@ public class UpdateServer {
     }
     public void updateSpiders(float deltaTime)
     {
-        if(timer>=UPDATE_TIME) {
+        timer2+=deltaTime;
+        if(timer2>=UPDATE_TIME) {
             JSONArray data = new JSONArray();
             try {
                 for (Spider spider: playScreen.getWorldCreator().getSpiders()) {
@@ -72,6 +76,7 @@ public class UpdateServer {
                         jspider.put("y", spider.enemyBody.getPosition().y);
                         jspider.put("xv", spider.enemyBody.getLinearVelocity().x);
                         jspider.put("yv", spider.enemyBody.getLinearVelocity().y);
+                        jspider.put("destroyed",false);
                         jspider.put("spawned", true);
                         data.put(jspider);
                     }
@@ -83,20 +88,22 @@ public class UpdateServer {
                         jspider.put("y", 0);
                         jspider.put("xv",0);
                         jspider.put("yv", 0);
+                        jspider.put("destroyed",true);
                         jspider.put("spawned", true);
                         data.put(jspider);
                     }
                 }
                 connectionHandler.getSocket().emit("spidersMove", data);//trimite event catre server.
-                //timer = 0;
+                timer2 = 0;
             } catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data for spiders");
             }
         }
     }
-    public void updateBullets( DefaultBullet bullet)
+    public void updateBullets( DefaultBullet bullet,float deltaTime)
     {
-        if(timer>=UPDATE_TIME) {
+        timer3+=deltaTime;
+        if(timer3>=UPDATE_TIME) {
 
             JSONObject data = new JSONObject();
             try {
@@ -105,9 +112,10 @@ public class UpdateServer {
                     data.put("y", bullet.bulletBody.getPosition().y);
                     data.put("xv", bullet.bulletBody.getLinearVelocity().x);
                     data.put("yv", bullet.bulletBody.getLinearVelocity().y);
+                    data.put("playerId", playScreen.getConnectionHandler().getSocket().id());
                 }
                 connectionHandler.getSocket().emit("updateBullets", data);                      //trimite event catre server.
-                                                                                                        //timer = 0;
+                timer3 = 0;
             } catch (JSONException e) {
                 Gdx.app.log("socketIO", "error sending update data for bullets");
             }

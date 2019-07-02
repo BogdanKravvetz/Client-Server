@@ -38,12 +38,12 @@ public class WorldContactListener implements ContactListener {
             case Constants.BULLET_BIT | Constants.ENEMY_BIT:
                 if(fixA.getFilterData().categoryBits == Constants.BULLET_BIT) {
                     ((Bullet) fixA.getUserData()).onHit();
-                    ((Enemy) fixB.getUserData()).onEnemyHit(((Bullet) fixA.getUserData()));
+                    ((Enemy) fixB.getUserData()).onEnemyHit(((Bullet) fixA.getUserData()),((Bullet) fixA.getUserData()).getPlayScreen().getPlayer());
                 }
                 else if(fixB.getFilterData().categoryBits == Constants.BULLET_BIT)
                 {
                     ((Bullet)fixB.getUserData()).onHit();
-                    ((Enemy) fixA.getUserData()).onEnemyHit(((Bullet) fixB.getUserData()));
+                    ((Enemy) fixA.getUserData()).onEnemyHit(((Bullet) fixB.getUserData()),((Bullet) fixB.getUserData()).getPlayScreen().getPlayer());
                 }
                 break;
 
@@ -68,13 +68,34 @@ public class WorldContactListener implements ContactListener {
                 break;
             case Constants.PLAYER_BIT | Constants.ENEMY_BIT:
                 if(fixA.getFilterData().categoryBits == Constants.ENEMY_BIT) {
-                    ((Enemy) fixA.getUserData()).hit(((Player) fixB.getUserData()));
+                    ((Spider) fixA.getUserData()).hit(((Player) fixB.getUserData()));
                 }
                 else if(fixB.getFilterData().categoryBits == Constants.ENEMY_BIT)
                 {
-                    ((Enemy) fixB.getUserData()).hit(((Player) fixA.getUserData()));
+                    ((Spider) fixB.getUserData()).hit(((Player) fixA.getUserData()));
                 }
                 break;
+            case Constants.ENEMY_BULLET_BIT | Constants.OBJECT_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.ENEMY_BULLET_BIT) {
+                    ((Bullet) fixA.getUserData()).onHit();
+                }
+                else if(fixB.getFilterData().categoryBits == Constants.ENEMY_BULLET_BIT)
+                {
+                    ((Bullet)fixB.getUserData()).onHit();
+                }
+                break;
+            case Constants.ENEMY_BULLET_BIT | Constants.PLAYER_BIT:
+                if(fixA.getFilterData().categoryBits == Constants.ENEMY_BULLET_BIT) {
+                    ((Bullet) fixA.getUserData()).onHit();
+                    ((Player) fixB.getUserData()).hit((Player) fixB.getUserData());
+                }
+                else if(fixB.getFilterData().categoryBits == Constants.ENEMY_BULLET_BIT)
+                {
+                    ((Bullet)fixB.getUserData()).onHit();
+                    ((Player) fixA.getUserData()).hit((Player) fixA.getUserData());
+                }
+                break;
+
         }
     }
 

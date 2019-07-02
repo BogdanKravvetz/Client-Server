@@ -88,18 +88,17 @@ public class InputHandler {
                 if(!playScreen.getWorld().isLocked()) {
                     if (movementVector == null)
                         movementVector = new Vector2(playScreen.getPlayer().getPlayerStats().getAccelerationRate(),0);
-                    DefaultBullet bullet = new DefaultBullet(playScreen,playScreen.getPlayer().playerBody.getPosition().x * Constants.PPM,playScreen.getPlayer().playerBody.getPosition().y *Constants.PPM);
+                    DefaultBullet bullet = new DefaultBullet(playScreen,playScreen.getPlayer().playerBody.getPosition().x * Constants.PPM,playScreen.getPlayer().playerBody.getPosition().y *Constants.PPM,playScreen.getPlayer().getId());
                     Vector2 shotVector = new Vector2(movementVector.x * bullet.getBulletStats().getSpeed(),movementVector.y * bullet.getBulletStats().getSpeed());
                     //Gdx.app.log("in","shot"+shotVector);
                     bullet.bulletBody.applyLinearImpulse(shotVector,bullet.bulletBody.getWorldCenter(),true);
                     playScreen.getBullets().add(bullet);
-                    playScreen.getUpdateServer().updateBullets(bullet);
+                    playScreen.getUpdateServer().updateBullets(bullet,deltaTime);
                     //playScreen.spawnItem(new ItemDef(new Vector2(playScreen.getPlayer().getX(),playScreen.getPlayer().getY()), LifeCrystal.class));
-                    for(Player player :playScreen.getAllPlayers().values())
-                    {
-                        Gdx.app.log("input", "ID:" + player.getId());
-                    }
-
+//                    for(Player player :playScreen.getAllPlayers().values())
+//                    {
+//                        Gdx.app.log("input", "ID:" + player.getId());
+//                    }
                 }
             }
         }

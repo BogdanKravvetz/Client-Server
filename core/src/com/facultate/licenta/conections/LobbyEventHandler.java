@@ -48,22 +48,24 @@ public class LobbyEventHandler {
                 try {
                     String name = data.getString("name"); //ia proprietatea id al obiectului json
 
-                    Gdx.app.log("socketIO","New Player Connected: "+ name);
+                    Gdx.app.log("lobby event","New Player Connected: "+ name);
                     lobbyScreen.getAllPlayers().add(name);
                 }
                 catch (JSONException e)
                 {
-                    Gdx.app.log("socketIO", "Error getting New Player id");
+                    Gdx.app.log("lobby event", "Error getting New Player id");
                 }
             }
-        }).on("getPlayers", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("getPlayers", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                playersFromServer = null;
+                //playersFromServer = null;
                 playersFromServer = (JSONArray) objects[0];         //ia lista de jucatori de pe server
 
             }
-        }).on("start", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("start", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];
@@ -76,10 +78,11 @@ public class LobbyEventHandler {
                 }
 
             }
-        }).on("started", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("started", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                Gdx.app.log("LOBBYSCREEN", "change handler");
+                Gdx.app.log("Lobby Event", "Started");
                 started = true;
                // lobbyScreen.getMyGame().setScreen( new MenuScreen(lobbyScreen.getMyGame()));
             }
@@ -87,36 +90,42 @@ public class LobbyEventHandler {
         connectionHandler.getSocket().on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                Gdx.app.log("socketIO", "Disconnected");
+                if(started == false) {
+
+                    Gdx.app.log("lobby event", "Disconnected");
+                }
 
             }
-        }).on("playerDisconnected", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("playerDisconnected", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];
                 try {
-                    String name = data.getString("nameC");
-                    Gdx.app.log("socketIO","Player with name: "+ name+" disconnected");
-                    lobbyScreen.getAllPlayers().removeValue(name,false);
-                    //lobbyScreen.getAllPlayers().r
-                    //lobbyScreen.getAllPlayers().removeValue(id,true);
+                    if(started == false) {
+                        String name = data.getString("nameC");
+                        Gdx.app.log("socketIO", "Player with name: " + name + " disconnected");
+                        lobbyScreen.getAllPlayers().removeValue(name, false);
+                    }
                 }
                 catch (JSONException e)
                 {
-                    Gdx.app.log("socketIO", "Errorgetting Player id");
+                    Gdx.app.log("lobby event", "Errorgetting Player id");
                 }
             }
-        }).on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = new JSONObject();
                 try {
+                    Gdx.app.log("lobby event", "I sent my name!");
                     data.put("name", Constants.name.getText());
                     connectionHandler.getSocket().emit("myName",data);
                 }
                 catch (JSONException e)
                 {
-                    Gdx.app.log("lobbyScreen", "nameError");
+                    Gdx.app.log("lobby event", "nameError");
                 }
 
             }

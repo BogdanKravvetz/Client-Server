@@ -2,6 +2,10 @@ package com.facultate.licenta.stats;
 
 public class BulletStats {
 
+    public void setLifeSpan(float lifeSpan) {
+        this.lifeSpan = lifeSpan;
+    }
+
     private float lifeSpan;
     private float speed;
     private float damage;

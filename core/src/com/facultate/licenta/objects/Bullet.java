@@ -10,10 +10,21 @@ import com.facultate.licenta.stats.BulletStats;
 
 public abstract class Bullet extends Sprite {
 
+    public PlayScreen getPlayScreen() {
+        return playScreen;
+    }
+
     protected PlayScreen playScreen;
     protected World world;
     public Body bulletBody;
     public Vector2 velocity;
+
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    private String playerId;
 
     public BulletStats getBulletStats() {
         return bulletStats;
@@ -21,7 +32,7 @@ public abstract class Bullet extends Sprite {
 
     protected BulletStats bulletStats;
 
-    public Bullet(PlayScreen playScreen,float x ,float y)
+    public Bullet(PlayScreen playScreen,float x ,float y,String myPlayerId)
     {
         super(playScreen.getAtlas().findRegion("Character"));
         this.playScreen = playScreen;
@@ -30,6 +41,7 @@ public abstract class Bullet extends Sprite {
         defineBullet();
         velocity = new Vector2(0,0);
         bulletStats =  new BulletStats();
+        playerId = myPlayerId;
     }
     protected abstract void defineBullet();
     public abstract void update(float deltaTime);

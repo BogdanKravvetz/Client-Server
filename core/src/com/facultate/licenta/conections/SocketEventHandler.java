@@ -23,12 +23,38 @@ public class SocketEventHandler {
     private JSONArray playersFromServer;
     private JSONArray getSpidersFromServer;
 
+    public Integer getScore() {
+        return score;
+    }
+
+    private Integer score;
+
+    public String getMyId() {
+        return myId;
+    }
+
+    private String myId;
+
+
+    public JSONArray getEnemyBullets() {
+        return enemyBullets;
+    }
+
+    private JSONArray enemyBullets;
+
+    public boolean bulletSpawned;
+
     public boolean getIsGameOver() {
         return isGameOver;
     }
 
     private  boolean isGameOver;
 
+    public String getWinnerName() {
+        return winnerName;
+    }
+
+    private String winnerName;
 
     private JSONObject buletFromServer;
     private JSONArray destroyedSpidersFromServer;
@@ -65,6 +91,9 @@ public class SocketEventHandler {
         this.playScreen = playScreen;
         this.connectionHandler = connectionHandler;
         isGameOver = false;
+        bulletSpawned = false;
+        score = 0;
+        winnerName="constructor";
     }
 
 
@@ -78,7 +107,7 @@ public class SocketEventHandler {
             public void call(Object... args)
             {
                 Gdx.app.log("socketIO","Connected");
-                playScreen.setPlayer(new Player(playScreen));
+                //playScreen.setPlayer(new Player(playScreen));
 //                JSONObject data = new JSONObject();
 //                try {
 //                    data.put("name", Constants.name.getText());
@@ -91,13 +120,14 @@ public class SocketEventHandler {
 
             }
             //face rost de id-ul socket-ului (clientului) curent
-        }).on("socketId", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("socketId", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];
                 try {
-                    String id = data.getString("id");
-                    Gdx.app.log("socketIO","my id: "+ id);
+                    myId = data.getString("id");
+                    Gdx.app.log("socketIO","my id: "+ myId);
                 }
                 catch (JSONException e)
                 {
@@ -108,7 +138,8 @@ public class SocketEventHandler {
             }
             //cand un jucator nou se conecteaza face rost de id-ul lui
             //acest event il primeste toti jucatorii deja conectati.
-        }).on("newPlayerConnected", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("newPlayerConnected", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];                                          //ia obiectul json din argumentele eventului de pe server
@@ -116,6 +147,7 @@ public class SocketEventHandler {
                     String playerId = data.getString("id");                                         //ia proprietatea id al obiectului json
                     Gdx.app.log("socketIO","New Player Connected: "+ playerId);
                     Player newPlayer  = new Player(playScreen);
+
                     newPlayer.setId(playerId);
                     playScreen.getAllPlayers().put(playerId,newPlayer);
                 }
@@ -124,7 +156,8 @@ public class SocketEventHandler {
                     Gdx.app.log("socketIO", "Error getting New Player id");
                 }
             }
-        }).on("getPlayers", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("getPlayers", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 playersFromServer = null;
@@ -132,13 +165,15 @@ public class SocketEventHandler {
                 playersFromServer = (JSONArray) objects[0];//ia lista de jucatori de pe server
 
             }
-        }).on("playerMoved", new Emitter.Listener() {//event primit de la server atunci cand un al jucator s-a miscat
+        });
+        connectionHandler.getSocket().on("playerMoved", new Emitter.Listener() {//event primit de la server atunci cand un al jucator s-a miscat
             @Override
             public void call(Object... objects) {
                 otherPlayerMovedData = (JSONObject) objects[0];
 
             }
-        }).on("sendTimer", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("sendTimer", new Emitter.Listener() {
             @Override
             //primeste statusul timer-ului de la server
             //si updateaza timerul local.
@@ -153,47 +188,55 @@ public class SocketEventHandler {
                     Gdx.app.log("socketIO", "error updating in game timer from server.");
                 }
             }
-        }).on("getSpiders", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("getSpiders", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 getSpidersFromServer = (JSONArray) objects[0];//ia lista de jucatori de pe server
 
 
             }
-        }).on("spidersMove", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("spidersMove", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 spidersFromServer = (JSONArray) objects[0];
 
             }
-        }).on("spidersStop", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("spidersStop", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 spidersFromServerAtStop = (JSONArray) objects[0];
 
             }
-        }).on("updateBullets", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("updateBullets", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 buletFromServer = (JSONObject) objects[0];
             }
 
-        }).on("spidersDestroyed", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("spidersDestroyed", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 destroyedSpidersFromServer = (JSONArray) objects[0];
             }
-        }).on("start", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("start", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
 
             }
-        }).on("gameOver", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("gameOver", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                JSONObject data = (JSONObject)objects[0];
                try {
                    isGameOver = data.getBoolean("gameOver");
+                   winnerName = data.getString("winner");
                }
                catch (JSONException e)
                {
@@ -201,7 +244,8 @@ public class SocketEventHandler {
                }
 
             }
-        }).on("gainHp", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("gainHp", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];
@@ -220,12 +264,37 @@ public class SocketEventHandler {
 
             }
         });
+        connectionHandler.getSocket().on("score", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONObject data = (JSONObject) objects[0];
+                try {
+                    String id = data.getString("id");
+                    score = data.getInt("score");
+                    Gdx.app.log("LobbyEvent", "Score: " + score);
+
+                }
+                catch (JSONException e)
+                {
+                    Gdx.app.log("LobbyEvent", "Score error");
+                }
+            }
+        });
+        connectionHandler.getSocket().on("enemyShoot", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                enemyBullets = (JSONArray) objects[0];
+                //Gdx.app.log("socketIO", "SIZE = " + enemyBullets.length());
+                bulletSpawned = false;
+            }
+        });
         connectionHandler.getSocket().on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 Gdx.app.log("socketIO", "Disconnected");
             }
-        }).on("playerDisconnected", new Emitter.Listener() {
+        });
+        connectionHandler.getSocket().on("playerDisconnected", new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
                 JSONObject data = (JSONObject) objects[0];
@@ -236,6 +305,7 @@ public class SocketEventHandler {
                         playScreen.getAllPlayers().get(id).setToDestroy();
                         playScreen.getAllPlayers().remove(id);
                     }
+                    //playScreen.getConnectionHandler().getSocket().close();
                 }
                 catch (JSONException e)
                 {
