@@ -36,6 +36,7 @@ public class DefaultBullet extends Bullet {
 
     }
 
+
     @Override
     protected void defineBullet() {
         if(!playScreen.getWorld().isLocked()) {

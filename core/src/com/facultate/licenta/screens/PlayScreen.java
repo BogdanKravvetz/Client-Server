@@ -218,7 +218,6 @@ public class PlayScreen implements Screen {
     public void show() {
 
     }
-
     public void update(float delta) {
         //update de 60  de ori pe secunda.
         world.step(1 / 60f, 6, 2);

@@ -7,6 +7,7 @@ public class EnemyStats {
         this.currentHp = currentHp;
     }
 
+
     private float currentHp ;
     private float speed ;
     private float fireRate ;

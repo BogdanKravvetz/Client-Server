@@ -12,6 +12,7 @@ public class PlayerStats {
     private float speed ;
     private float fireRate ;
 
+
     public float getAccelerationRate() {
         return accelerationRate;
     }

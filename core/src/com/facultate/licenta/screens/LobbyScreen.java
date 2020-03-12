@@ -130,7 +130,6 @@ public class LobbyScreen implements Screen {
                 }
 
 
-
                 //myGame.setScreen(new PlayScreen(myGame,lobby));
                 super.touchUp(event, x, y, pointer, button);
             }

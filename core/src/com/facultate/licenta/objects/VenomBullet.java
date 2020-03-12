@@ -59,6 +59,7 @@ public class VenomBullet extends Bullet {
             defineBullet();
         }
     }
+
     @Override
     public void update(float deltaTime)
     {

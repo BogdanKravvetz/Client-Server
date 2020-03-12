@@ -16,5 +16,6 @@ public class DesktopLauncher {
 		config.addIcon("Icon32.png", Files.FileType.Internal);
 		config.addIcon("Icon16.png", Files.FileType.Internal);
 		new LwjglApplication(new Game(), config);
+
 	}
 }

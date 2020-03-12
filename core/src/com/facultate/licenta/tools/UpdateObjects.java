@@ -64,6 +64,7 @@ public class UpdateObjects {
             }
         }
     }
+
     public void getSpiders()
     {
         if (playScreen.getSocketEvents().getGetSpidersFromServer() != null) {

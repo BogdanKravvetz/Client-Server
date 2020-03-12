@@ -26,6 +26,7 @@ public abstract class Enemy extends Sprite {
         defineEnemy();
         velocity = new Vector2(0,0);
     }
+
     protected abstract void defineEnemy();
     public abstract void update(float deltaTime);
     public abstract void onEnemyHit(Bullet bullet,Player player);

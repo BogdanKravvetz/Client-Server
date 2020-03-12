@@ -25,6 +25,7 @@ public class ConnectionHandler {
     //            String ip = Inet4Address.getLocalHost().getHostAddress();
 //            socket = IO.socket("http://"+ip+":8081");
 
+
     public Socket getSocket() {
         return socket;
     }

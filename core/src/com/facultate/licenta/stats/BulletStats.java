@@ -28,5 +28,4 @@ public class BulletStats {
         damage = 50;
     }
 
-
 }

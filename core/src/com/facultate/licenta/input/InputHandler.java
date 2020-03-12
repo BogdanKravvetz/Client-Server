@@ -16,6 +16,7 @@ public class InputHandler {
 
     private PlayScreen playScreen;
 
+
     public Vector2 getMovementVector() {
         return movementVector;
     }

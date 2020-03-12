@@ -208,6 +208,7 @@ public class Player extends Sprite {
             definePlayer();
         }
     }
+
     public void hit(Player player){
 //        Gdx.app.log("PLAYER", "COLIDED PLAYER ID IS: "+ player.getId());
 //        Gdx.app.log("PLAYER", "COLIDED PLAYER ID FROM SOCKET IS: "+ playScreen.getConnectionHandler().getSocket().id());

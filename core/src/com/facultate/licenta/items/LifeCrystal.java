@@ -20,6 +20,7 @@ public class LifeCrystal extends Item{
         velocity = new Vector2(0,0);
     }
 
+
     @Override
     public void defineItem() {
         if(!playScreen.getWorld().isLocked()) {

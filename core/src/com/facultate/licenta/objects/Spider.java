@@ -121,6 +121,7 @@ public class Spider extends Enemy {
 
     }
 
+
     @Override
     public void hit(Player player) {
 //        Gdx.app.log("SPIDER", "COLIDED PLAYER ID IS: "+ player.getId());

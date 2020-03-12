@@ -56,6 +56,7 @@ public class Hud implements Disposable {
                 return true; //returneaza true pentru a intra in touch up
             }
 
+
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 thisPlayScreen.getConnectionHandler().getSocket().disconnect();

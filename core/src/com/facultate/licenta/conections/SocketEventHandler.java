@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 //evenimente primite de la server in timpul jocului.
+
 public class SocketEventHandler {
     private PlayScreen playScreen;
     private ConnectionHandler connectionHandler;

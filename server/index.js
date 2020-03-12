@@ -88,6 +88,7 @@ io.on('connection',function(socket)
             }
          }
     });
+
     socket.on('playerMoved', function(data) //event primit de la socket
     {
         data.id = socket.id; //initializaeza id-ul pentru data cu id-ul socket-ului curent

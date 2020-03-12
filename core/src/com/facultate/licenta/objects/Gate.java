@@ -18,6 +18,7 @@ public class Gate extends InteractiveTileObject{
         fixture.setUserData(this);
         setCategoryFilter(Constants.OBJECT_BIT);
     }
+
     @Override
     public void onNoEnemies() {
         if (playScreen.test) {

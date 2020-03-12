@@ -20,6 +20,7 @@ public abstract class Bullet extends Sprite {
     public Vector2 velocity;
 
 
+
     public String getPlayerId() {
         return playerId;
     }

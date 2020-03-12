@@ -72,6 +72,7 @@ public class Controller {
                 return true;
             }
         });
+
         Gdx.input.setInputProcessor(stage);
         //table e ca o masa intr=o camera(stage) pe care asezi etichete(lable)
 

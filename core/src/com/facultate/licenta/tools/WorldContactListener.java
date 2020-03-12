@@ -99,6 +99,7 @@ public class WorldContactListener implements ContactListener {
         }
     }
 
+
     @Override
     public void endContact(Contact contact) {
         //Gdx.app.log("Colider:" , "No More Contact");

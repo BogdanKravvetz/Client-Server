@@ -62,7 +62,6 @@ public class RulesScreen implements Screen {
     }
 
 
-
     @Override
     public void show() {
 
