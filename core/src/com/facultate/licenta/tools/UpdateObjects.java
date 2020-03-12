@@ -50,7 +50,6 @@ public class UpdateObjects {
                 {
                     Player otherPlayer = new Player(playScreen);
                     Vector2 position = new Vector2();
-                    //trebuie si id
                     String id = playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getString("id");
                     position.x = ((Double) playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getDouble("x")).floatValue();
                     position.y = ((Double) playScreen.getSocketEvents().getPlayersFromServer().getJSONObject(i).getDouble("y")).floatValue();

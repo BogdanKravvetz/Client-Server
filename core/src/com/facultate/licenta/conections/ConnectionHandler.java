@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
+//creaza conexiunea cu serverul
 public class ConnectionHandler {
     //89.137.255.89
     //192.168.0.94 - local
@@ -53,7 +54,7 @@ public class ConnectionHandler {
             IO.Options opts = new IO.Options();
             opts.forceNew = false;
             opts.reconnection = false;
-            socket = IO.socket("http://192.168.0.94:8081",opts);
+            socket = IO.socket("http://10.146.1.34:8081",opts);
             //socket = IO.socket("http://"+ip+":8081");
 
             socket.connect();

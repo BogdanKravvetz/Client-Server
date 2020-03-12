@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-
+//evenimente primite de la server in camera de asteptare.
 public class LobbyEventHandler {
 
     private ConnectionHandler connectionHandler;

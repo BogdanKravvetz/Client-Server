@@ -11,7 +11,7 @@ import com.facultate.licenta.screens.PlayScreen;
 import com.facultate.licenta.tools.Constants;
 
 import org.json.JSONObject;
-
+//logica, atunci cand un input este apasat.
 public class InputHandler {
 
     private PlayScreen playScreen;

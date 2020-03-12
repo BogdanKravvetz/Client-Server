@@ -8,7 +8,7 @@ import com.facultate.licenta.screens.PlayScreen;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+//trimite evenimente catre server pentru miscarea corpurilor.
 public class UpdateServer {
     private PlayScreen playScreen;
     private ConnectionHandler connectionHandler;

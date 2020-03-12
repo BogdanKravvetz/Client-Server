@@ -46,8 +46,8 @@ public class LifeCrystal extends Item{
 
     @Override
     public void use(Player player) {
-        Gdx.app.log("Crystal", "player ID " + player.getId());
-        Gdx.app.log("Crystal", "Socket ID " + playScreen.getConnectionHandler().getSocket().id());
+//        Gdx.app.log("Crystal", "player ID " + player.getId());
+//        Gdx.app.log("Crystal", "Socket ID " + playScreen.getConnectionHandler().getSocket().id());
 
         if (player.getId().equals(playScreen.getConnectionHandler().getSocket().id()))
         {
