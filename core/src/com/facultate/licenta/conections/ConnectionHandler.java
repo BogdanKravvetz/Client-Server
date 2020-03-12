@@ -17,13 +17,11 @@ import io.socket.client.Socket;
 
 //creaza conexiunea cu serverul
 public class ConnectionHandler {
-    //89.137.255.89
     //192.168.0.94 - local
 
-    //193.254.231.208  -camin
-    //192.168.82.38   -local - ok
+    //192.168.82.38   -local
 
-    //192.168.137.42  -hotspot?
+    //192.168.137.42  -hotspot
     //            String ip = Inet4Address.getLocalHost().getHostAddress();
 //            socket = IO.socket("http://"+ip+":8081");
 
